@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test</title>
+    <style>
+        body {
+            background: #1a1a1a;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            padding: 40px;
+        }
+        .terminal {
+            background: #000;
+            border: 2px solid #00ff00;
+            padding: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal">
+        <h1>root@kali:~/my-website# ls -la</h1>
+        <p>total 20K</p>
+        <p>drwxrwxr-x  2 mo mo 4.0K Jan 13 20:33 .</p>
+        <p>drwx------ 34 mo mo 4.0K Jan 13 20:28 ..</p>
+        <p>-rw-rw-r--  1 mo mo  571 Jan 13 20:33 index.html</p>
+        <p>-rw-rw-r--  1 mo mo  382 Jan 13 20:33 script.js</p>
+        <p>-rw-rw-r--  1 mo mo  352 Jan 13 20:33 style.css</p>
+        <br>
+        <h2>✅ Website files created successfully!</h2>
+        <button onclick="alert('Hello from Kali!')">Test JavaScript</button>
+    </div>
+    <script>
+        console.log('Test site loaded');
+    </script>
+</body>
+</html>
