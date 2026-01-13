@@ -1,6 +1,6 @@
 // API Configuration
 const APIs = {
-    quote: 'https://api.quotable.io/random',
+    quote: 'https://zenquotes.io/api/random',
     joke: 'https://v2.jokeapi.dev/joke/Programming?safe-mode',
     weather: (city) => `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=YOUR_API_KEY&units=metric`,
     cat: 'https://api.thecatapi.com/v1/images/search',
@@ -26,21 +26,46 @@ async function getQuote() {
         elements.quote.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
         const response = await fetch(APIs.quote);
         const data = await response.json();
+        
+        // ZenQuotes returns an array
+        if (data && data[0]) {
+            elements.quote.innerHTML = `
+                <div class="quote-content">
+                    <i class="fas fa-quote-left" style="color:#00dbde;"></i>
+                    <p>${data[0].q}</p>
+                    <i class="fas fa-quote-right" style="color:#00dbde;"></i>
+                </div>
+                <div class="quote-author">
+                    <i class="fas fa-user"></i> ${data[0].a}
+                </div>
+            `;
+        } else {
+            // Fallback quote
+            elements.quote.innerHTML = `
+                <div class="quote-content">
+                    <i class="fas fa-quote-left" style="color:#00dbde;"></i>
+                    <p>Code is like humor. When you have to explain it, it's bad.</p>
+                    <i class="fas fa-quote-right" style="color:#00dbde;"></i>
+                </div>
+                <div class="quote-author">
+                    <i class="fas fa-user"></i> Cory House
+                </div>
+            `;
+        }
+    } catch (error) {
+        // Final fallback
         elements.quote.innerHTML = `
             <div class="quote-content">
                 <i class="fas fa-quote-left" style="color:#00dbde;"></i>
-                <p>${data.content}</p>
+                <p>First, solve the problem. Then, write the code.</p>
                 <i class="fas fa-quote-right" style="color:#00dbde;"></i>
             </div>
             <div class="quote-author">
-                <i class="fas fa-user"></i> ${data.author}
+                <i class="fas fa-user"></i> John Johnson
             </div>
         `;
-    } catch (error) {
-        elements.quote.innerHTML = '<span style="color:#ff6b6b;">Error loading quote</span>';
     }
 }
-
 async function getJoke() {
     try {
         elements.joke.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
@@ -81,7 +106,7 @@ async function getWeather() {
         
         // Note: You need to sign up at openweathermap.org for a free API key
         // Replace 'YOUR_API_KEY' with your actual API key
-        const apiKey = 'YOUR_API_KEY_HERE'; // Get from openweathermap.org
+        const apiKey = '0cd360a0e5f23399f0dfb64d04bb569e'; // Get from openweathermap.org
         const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`);
         const data = await response.json();
         
