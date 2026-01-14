@@ -241,3 +241,69 @@ function simulateTyping() {
     
     setTimeout(typeCommand, 1000);
 }
+
+// Have I Been Pwned API - Check email breaches
+async function checkBreach() {
+    const emailInput = document.getElementById('email-input');
+    const email = emailInput.value.trim();
+    
+    if (!email) {
+        document.getElementById('breach-display').innerHTML = 
+            '<span style="color:#ffbd2e;">Please enter an email</span>';
+        return;
+    }
+    
+    if (!email.includes('@')) {
+        document.getElementById('breach-display').innerHTML = 
+            '<span style="color:#ffbd2e;">Please enter a valid email</span>';
+        return;
+    }
+    
+    try {
+        document.getElementById('breach-display').innerHTML = 
+            '<i class="fas fa-spinner fa-spin"></i> Checking breaches...';
+        
+        // Hash the email (SHA-1) for privacy
+        const emailHash = await sha1(email.toLowerCase());
+        const prefix = emailHash.substring(0, 5);
+        const suffix = emailHash.substring(5);
+        
+        // Call HIBP API
+        const response = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`);
+        const data = await response.text();
+        
+        // Check if hash suffix exists in results
+        const hashes = data.split('\n');
+        const found = hashes.find(h => h.startsWith(suffix));
+        
+        if (found) {
+            const count = found.split(':')[1];
+            document.getElementById('breach-display').innerHTML = `
+                <div style="color:#ff6b6b;">
+                    <i class="fas fa-exclamation-triangle"></i> <strong>BREACHED!</strong>
+                    <p>Email found in ${parseInt(count).toLocaleString()} breaches</p>
+                    <p style="font-size:0.9rem;">Change passwords for sites using this email</p>
+                </div>
+            `;
+        } else {
+            document.getElementById('breach-display').innerHTML = `
+                <div style="color:#00ff00;">
+                    <i class="fas fa-check-circle"></i> <strong>SAFE!</strong>
+                    <p>No breaches found for this email</p>
+                    <p style="font-size:0.9rem;">Good security practice!</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        document.getElementById('breach-display').innerHTML = 
+            '<span style="color:#ff6b6b;">Error checking breaches. Try again.</span>';
+    }
+}
+
+// SHA-1 hashing function (for email privacy)
+async function sha1(str) {
+    const buffer = new TextEncoder().encode(str);
+    const hashBuffer = await crypto.subtle.digest('SHA-1', buffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+}
