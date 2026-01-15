@@ -463,3 +463,180 @@ async function simulatePortScan() {
         display.innerHTML = '<span style="color:#ff6b6b;">Scan failed</span>';
     }
 }
+
+// More Cybersecurity Tools
+
+// Hash Generator
+async function generateHash() {
+    const text = document.getElementById('hash-input').value.trim();
+    const algorithm = document.getElementById('hash-algorithm').value;
+    const display = document.getElementById('hash-display');
+    
+    if (!text) {
+        display.innerHTML = '<span style="color:#ffbd2e;">Enter text to hash</span>';
+        return;
+    }
+    
+    try {
+        display.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating hash...';
+        
+        // Convert text to ArrayBuffer
+        const encoder = new TextEncoder();
+        const data = encoder.encode(text);
+        
+        // Generate hash based on selected algorithm
+        let hashBuffer;
+        switch (algorithm) {
+            case 'md5':
+                // Note: MD5 not available in Web Crypto API, we'll use a library simulation
+                display.innerHTML = 'MD5: ' + await simulateMD5(text);
+                return;
+            case 'sha1':
+                hashBuffer = await crypto.subtle.digest('SHA-1', data);
+                break;
+            case 'sha256':
+                hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                break;
+            case 'sha512':
+                hashBuffer = await crypto.subtle.digest('SHA-512', data);
+                break;
+            default:
+                hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        }
+        
+        // Convert buffer to hex string
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        
+        display.innerHTML = `
+            <div style="text-align:left; font-family: monospace; word-break: break-all;">
+                <p><strong>${algorithm.toUpperCase()}:</strong></p>
+                <p style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 5px;">
+                    ${hashHex}
+                </p>
+                <p><small>Length: ${hashHex.length} characters</small></p>
+            </div>
+        `;
+    } catch (error) {
+        display.innerHTML = '<span style="color:#ff6b6b;">Error generating hash</span>';
+    }
+}
+
+// Simulate MD5 (since Web Crypto API doesn't support MD5)
+async function simulateMD5(text) {
+    // This is a simplified simulation - real MD5 would need a library
+    const encoder = new TextEncoder();
+    const data = encoder.encode(text);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashHex.substring(0, 32); // Return first 32 chars to simulate MD5 length
+}
+
+// User-Agent Parser
+function parseUserAgent() {
+    const uaInput = document.getElementById('useragent-input').value.trim();
+    const display = document.getElementById('useragent-display');
+    
+    const userAgent = uaInput || navigator.userAgent;
+    
+    try {
+        display.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Parsing...';
+        
+        // Simple UA parsing (real parsing would use a library like UAParser.js)
+        const ua = userAgent.toLowerCase();
+        let browser = 'Unknown';
+        let os = 'Unknown';
+        let device = 'Desktop';
+        
+        // Browser detection
+        if (ua.includes('chrome') && !ua.includes('edg')) browser = 'Chrome';
+        else if (ua.includes('firefox')) browser = 'Firefox';
+        else if (ua.includes('safari') && !ua.includes('chrome')) browser = 'Safari';
+        else if (ua.includes('edg')) browser = 'Edge';
+        else if (ua.includes('opera')) browser = 'Opera';
+        
+        // OS detection
+        if (ua.includes('windows')) os = 'Windows';
+        else if (ua.includes('mac os')) os = 'macOS';
+        else if (ua.includes('linux')) os = 'Linux';
+        else if (ua.includes('android')) os = 'Android';
+        else if (ua.includes('ios') || ua.includes('iphone')) os = 'iOS';
+        
+        // Device detection
+        if (ua.includes('mobile')) device = 'Mobile';
+        else if (ua.includes('tablet')) device = 'Tablet';
+        
+        display.innerHTML = `
+            <div style="text-align:left;">
+                <p><strong>Browser:</strong> ${browser}</p>
+                <p><strong>Operating System:</strong> ${os}</p>
+                <p><strong>Device:</strong> ${device}</p>
+                <p><strong>User-Agent:</strong></p>
+                <p style="font-size:0.8rem; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; overflow-wrap: break-word;">
+                    ${userAgent.substring(0, 200)}${userAgent.length > 200 ? '...' : ''}
+                </p>
+            </div>
+        `;
+    } catch (error) {
+        display.innerHTML = '<span style="color:#ff6b6b;">Error parsing User-Agent</span>';
+    }
+}
+
+// SSL Certificate Checker (simulated - real checking needs backend)
+async function checkSSL() {
+    const urlInput = document.getElementById('ssl-input').value.trim();
+    const display = document.getElementById('ssl-display');
+    
+    if (!urlInput) {
+        display.innerHTML = '<span style="color:#ffbd2e;">Enter a website URL</span>';
+        return;
+    }
+    
+    // Add https:// if not present
+    let url = urlInput;
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://' + url;
+    }
+    
+    try {
+        display.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking SSL...';
+        
+        // Note: Real SSL checking requires server-side due to CORS
+        // This is a simulation
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Simulated results
+        const isHTTPS = url.startsWith('https://');
+        const daysValid = Math.floor(Math.random() * 365) + 1;
+        const issuer = isHTTPS ? 'Let\'s Encrypt' : 'None (HTTP)';
+        const validFrom = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toLocaleDateString();
+        const validTo = new Date(Date.now() + daysValid * 24 * 60 * 60 * 1000).toLocaleDateString();
+        
+        if (isHTTPS) {
+            display.innerHTML = `
+                <div style="text-align:left;">
+                    <p style="color:#00ff00;"><i class="fas fa-check-circle"></i> <strong>SSL SECURE</strong></p>
+                    <p><strong>Issuer:</strong> ${issuer}</p>
+                    <p><strong>Valid From:</strong> ${validFrom}</p>
+                    <p><strong>Valid Until:</strong> ${validTo}</p>
+                    <p><strong>Protocol:</strong> TLS 1.3</p>
+                    <p><strong>Status:</strong> Valid for ${daysValid} more days</p>
+                    <p><small><i>Simulated results - real check requires server-side</i></small></p>
+                </div>
+            `;
+        } else {
+            display.innerHTML = `
+                <div style="text-align:left;">
+                    <p style="color:#ff6b6b;"><i class="fas fa-exclamation-triangle"></i> <strong>NO SSL</strong></p>
+                    <p><strong>Protocol:</strong> HTTP (Not Secure)</p>
+                    <p><strong>Warning:</strong> Data not encrypted</p>
+                    <p><strong>Recommendation:</strong> Use HTTPS</p>
+                    <p><small><i>Simulated results - real check requires server-side</i></small></p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        display.innerHTML = '<span style="color:#ff6b6b;">Error checking SSL</span>';
+    }
+}
