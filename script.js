@@ -640,3 +640,211 @@ async function checkSSL() {
         display.innerHTML = '<span style="color:#ff6b6b;">Error checking SSL</span>';
     }
 }
+
+
+// More Cybersecurity Tools - Part 2
+
+// Base64 Encoder/Decoder
+function encodeBase64() {
+    const input = document.getElementById('base64-input').value.trim();
+    const display = document.getElementById('base64-display');
+    
+    if (!input) {
+        display.innerHTML = '<span style="color:#ffbd2e;">Enter text to encode</span>';
+        return;
+    }
+    
+    try {
+        const encoded = btoa(unescape(encodeURIComponent(input)));
+        display.innerHTML = `
+            <div style="text-align:left;">
+                <p><strong>Base64 Encoded:</strong></p>
+                <p style="font-family: monospace; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 5px; word-break: break-all;">
+                    ${encoded}
+                </p>
+                <p><small>Length: ${encoded.length} characters</small></p>
+            </div>
+        `;
+    } catch (error) {
+        display.innerHTML = '<span style="color:#ff6b6b;">Encoding failed</span>';
+    }
+}
+
+function decodeBase64() {
+    const input = document.getElementById('base64-input').value.trim();
+    const display = document.getElementById('base64-display');
+    
+    if (!input) {
+        display.innerHTML = '<span style="color:#ffbd2e;">Enter Base64 to decode</span>';
+        return;
+    }
+    
+    try {
+        // Check if it's valid Base64
+        if (!/^[A-Za-z0-9+/=]+$/.test(input)) {
+            display.innerHTML = '<span style="color:#ff6b6b;">Invalid Base64 format</span>';
+            return;
+        }
+        
+        const decoded = decodeURIComponent(escape(atob(input)));
+        display.innerHTML = `
+            <div style="text-align:left;">
+                <p><strong>Decoded Text:</strong></p>
+                <p style="font-family: monospace; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 5px; word-break: break-all;">
+                    ${decoded}
+                </p>
+                <p><small>Length: ${decoded.length} characters</small></p>
+            </div>
+        `;
+    } catch (error) {
+        display.innerHTML = '<span style="color:#ff6b6b;">Decoding failed - invalid Base64</span>';
+    }
+}
+
+// HTTP Header Analyzer
+async function analyzeHeaders() {
+    const urlInput = document.getElementById('header-input').value.trim();
+    const display = document.getElementById('header-display');
+    
+    if (!urlInput) {
+        display.innerHTML = '<span style="color:#ffbd2e;">Enter a URL</span>';
+        return;
+    }
+    
+    // Add https:// if not present
+    let url = urlInput;
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://' + url;
+    }
+    
+    try {
+        display.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fetching headers...';
+        
+        // Note: CORS restrictions apply, this is a simulation
+        // In real implementation, you'd need a backend proxy
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Simulated headers based on URL
+        const isHTTPS = url.startsWith('https://');
+        const domain = url.replace(/^https?:\/\//, '').split('/')[0];
+        
+        const simulatedHeaders = {
+            'Server': 'nginx/1.18.0',
+            'Date': new Date().toUTCString(),
+            'Content-Type': 'text/html; charset=UTF-8',
+            'Connection': 'keep-alive',
+            'Cache-Control': 'max-age=3600',
+            'X-Frame-Options': 'SAMEORIGIN',
+            'X-Content-Type-Options': 'nosniff',
+            'Referrer-Policy': 'strict-origin-when-cross-origin'
+        };
+        
+        if (isHTTPS) {
+            simulatedHeaders['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains';
+        }
+        
+        // Format headers for display
+        let headersHTML = '';
+        for (const [key, value] of Object.entries(simulatedHeaders)) {
+            const isSecurityHeader = key.includes('Security') || key.includes('Policy') || key.includes('Options');
+            const color = isSecurityHeader ? '#00ff00' : '#00dbde';
+            headersHTML += `<p><strong style="color:${color}">${key}:</strong> ${value}</p>`;
+        }
+        
+        display.innerHTML = `
+            <div style="text-align:left; max-height: 300px; overflow-y: auto;">
+                <p><strong>HTTP Headers for ${domain}:</strong></p>
+                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 5px; margin-top: 10px;">
+                    ${headersHTML}
+                </div>
+                <p style="margin-top: 10px; font-size: 0.9rem;">
+                    <i class="fas fa-info-circle"></i> 
+                    <small>Simulated due to CORS restrictions. Real headers require backend proxy.</small>
+                </p>
+            </div>
+        `;
+    } catch (error) {
+        display.innerHTML = '<span style="color:#ff6b6b;">Failed to analyze headers</span>';
+    }
+}
+
+// MAC Address Validator/Lookup
+function checkMAC() {
+    const macInput = document.getElementById('mac-input').value.trim().toUpperCase();
+    const display = document.getElementById('mac-display');
+    
+    if (!macInput) {
+        display.innerHTML = '<span style="color:#ffbd2e;">Enter a MAC address</span>';
+        return;
+    }
+    
+    // MAC address regex patterns
+    const patterns = [
+        /^([0-9A-F]{2}[:]){5}([0-9A-F]{2})$/,
+        /^([0-9A-F]{2}[-]){5}([0-9A-F]{2})$/,
+        /^([0-9A-F]{4}[.]){2}([0-9A-F]{4})$/,
+        /^([0-9A-F]{12})$/
+    ];
+    
+    let isValid = false;
+    let format = 'Unknown';
+    
+    for (const pattern of patterns) {
+        if (pattern.test(macInput)) {
+            isValid = true;
+            if (pattern.toString().includes('[:]')) format = 'Colon-separated (00:1A:2B:3C:4D:5E)';
+            else if (pattern.toString().includes('[-]')) format = 'Dash-separated (00-1A-2B-3C-4D-5E)';
+            else if (pattern.toString().includes('[.]')) format = 'Dot-separated (001A.2B3C.4D5E)';
+            else format = 'No separator (001A2B3C4D5E)';
+            break;
+        }
+    }
+    
+    if (!isValid) {
+        display.innerHTML = '<span style="color:#ff6b6b;">Invalid MAC address format</span>';
+        return;
+    }
+    
+    // Extract OUI (first 3 bytes/6 chars) for vendor lookup
+    let oui = '';
+    if (macInput.includes(':') || macInput.includes('-')) {
+        oui = macInput.substring(0, 8).replace(/[: -]/g, '');
+    } else if (macInput.includes('.')) {
+        oui = macInput.substring(0, 6).replace(/\./g, '');
+    } else {
+        oui = macInput.substring(0, 6);
+    }
+    
+    // Simulated vendor database
+    const vendors = {
+        '001A2B': 'Cisco Systems',
+        '0050C2': 'Microsoft',
+        '000C29': 'VMware',
+        '001B63': 'Apple',
+        '001D0F': 'Avaya',
+        '0021D1': 'Samsung',
+        '000D56': 'Huawei',
+        '001EC0': 'HP',
+        '001BFC': 'NVIDIA',
+        '001F3B': 'Dell'
+    };
+    
+    const vendor = vendors[oui] || 'Unknown vendor';
+    
+    // Determine if it's unicast/multicast and universal/local
+    const firstByte = parseInt(oui.substring(0, 2), 16);
+    const isUnicast = (firstByte & 0x01) === 0; // LSB of first byte
+    const isUniversal = (firstByte & 0x02) === 0; // Second LSB of first byte
+    
+    display.innerHTML = `
+        <div style="text-align:left;">
+            <p style="color:#00ff00;"><i class="fas fa-check-circle"></i> <strong>VALID MAC ADDRESS</strong></p>
+            <p><strong>Format:</strong> ${format}</p>
+            <p><strong>OUI (Vendor):</strong> ${oui} - ${vendor}</p>
+            <p><strong>Address Type:</strong> ${isUnicast ? 'Unicast' : 'Multicast'}</p>
+            <p><strong>Administration:</strong> ${isUniversal ? 'Universally Administered' : 'Locally Administered'}</p>
+            <p><strong>Full MAC:</strong> <code>${macInput}</code></p>
+            <p><small><i>OUI: Organizationally Unique Identifier (first 3 bytes)</i></small></p>
+        </div>
+    `;
+}

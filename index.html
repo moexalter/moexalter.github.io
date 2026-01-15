@@ -236,7 +236,71 @@
                             <i class="fas fa-desktop"></i> Parse User-Agent
                         </button>
                     </div>
+
+
+
                 </div>
+
+                <!-- Tool 7: Base64 Encoder/Decoder -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-code"></i>
+                        <h3>Base64 Tool</h3>
+                    </div>
+                    <div class="card-body">
+                        <textarea id="base64-input" placeholder="Enter text or Base64" class="input-field" rows="2"></textarea>
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                            <button class="card-button" onclick="encodeBase64()" style="flex: 1;">
+                                <i class="fas fa-lock"></i> Encode
+                            </button>
+                            <button class="card-button" onclick="decodeBase64()" style="flex: 1;">
+                                <i class="fas fa-unlock"></i> Decode
+                            </button>
+                        </div>
+                        <p id="base64-display">Base64 encode/decode tool</p>
+                    </div>
+                </div>
+
+                <!-- Tool 8: HTTP Header Analyzer -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-server"></i>
+                        <h3>HTTP Headers</h3>
+                    </div>
+                    <div class="card-body">
+                        <input type="text" id="header-input" placeholder="URL (e.g., https://example.com)" class="input-field">
+                        <p id="header-display">Analyze HTTP response headers</p>
+                        <button class="card-button" onclick="analyzeHeaders()">
+                            <i class="fas fa-search"></i> Analyze Headers
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tool 9: MAC Address Lookup -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-network-wired"></i>
+                        <h3>MAC Address</h3>
+                    </div>
+                    <div class="card-body">
+                        <input type="text" id="mac-input" placeholder="MAC address (e.g., 00:1A:2B:3C:4D:5E)" class="input-field">
+                        <p id="mac-display">Validate and lookup MAC address</p>
+                        <button class="card-button" onclick="checkMAC()">
+                            <i class="fas fa-search"></i> Check MAC
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
 
                 <!-- Tool 6: SSL Checker -->
                 <div class="card">
