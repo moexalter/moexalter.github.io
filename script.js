@@ -307,3 +307,159 @@ async function sha1(str) {
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
 }
+
+// Cybersecurity Tools Functions
+
+// Enhanced IP Information Lookup
+async function getIPPlusInfo() {
+    const ipInput = document.getElementById('ip-input');
+    const target = ipInput.value.trim() || 'myip';
+    
+    try {
+        document.getElementById('ip-plus-display').innerHTML = 
+            '<i class="fas fa-spinner fa-spin"></i> Looking up...';
+        
+        const response = await fetch(`https://ipapi.co/${target}/json/`);
+        const data = await response.json();
+        
+        if (data.error) {
+            document.getElementById('ip-plus-display').innerHTML = 
+                '<span style="color:#ff6b6b;">Invalid IP/domain</span>';
+            return;
+        }
+        
+        document.getElementById('ip-plus-display').innerHTML = `
+            <div style="text-align:left;">
+                <p><strong>IP:</strong> ${data.ip || 'N/A'}</p>
+                <p><strong>Location:</strong> ${data.city}, ${data.region}, ${data.country_name}</p>
+                <p><strong>ISP:</strong> ${data.org || 'Unknown'}</p>
+                <p><strong>Timezone:</strong> ${data.timezone || 'N/A'}</p>
+                <p><strong>Coordinates:</strong> ${data.latitude}, ${data.longitude}</p>
+                <p><strong>ASN:</strong> ${data.asn || 'N/A'}</p>
+            </div>
+        `;
+    } catch (error) {
+        document.getElementById('ip-plus-display').innerHTML = 
+            '<span style="color:#ff6b6b;">Lookup failed</span>';
+    }
+}
+
+// Password Strength Checker
+function checkPasswordStrength() {
+    const password = document.getElementById('password-input').value;
+    const meter = document.getElementById('password-meter');
+    const display = document.getElementById('password-strength-display');
+    
+    if (!password) {
+        display.innerHTML = '<span style="color:#ffbd2e;">Enter a password</span>';
+        meter.style.width = '0%';
+        meter.style.background = '#ff6b6b';
+        return;
+    }
+    
+    // Calculate strength
+    let score = 0;
+    let feedback = [];
+    
+    // Length check
+    if (password.length >= 8) score += 25;
+    if (password.length >= 12) score += 15;
+    
+    // Complexity checks
+    if (/[A-Z]/.test(password)) score += 15;
+    if (/[a-z]/.test(password)) score += 15;
+    if (/[0-9]/.test(password)) score += 15;
+    if (/[^A-Za-z0-9]/.test(password)) score += 15;
+    
+    // Common password check
+    const commonPasswords = ['password', '123456', 'qwerty', 'admin', 'welcome'];
+    if (commonPasswords.includes(password.toLowerCase())) {
+        score = 10;
+        feedback.push('Very common password!');
+    }
+    
+    // Update meter
+    meter.style.width = `${Math.min(score, 100)}%`;
+    
+    // Color based on score
+    if (score < 40) {
+        meter.style.background = '#ff6b6b';
+        display.innerHTML = `<span style="color:#ff6b6b;"><i class="fas fa-times-circle"></i> WEAK</span>`;
+        feedback.push('Add more characters, numbers, and symbols');
+    } else if (score < 70) {
+        meter.style.background = '#ffbd2e';
+        display.innerHTML = `<span style="color:#ffbd2e;"><i class="fas fa-exclamation-triangle"></i> MEDIUM</span>`;
+        feedback.push('Could be stronger');
+    } else if (score < 90) {
+        meter.style.background = '#00dbde';
+        display.innerHTML = `<span style="color:#00dbde;"><i class="fas fa-check-circle"></i> STRONG</span>`;
+    } else {
+        meter.style.background = '#00ff00';
+        display.innerHTML = `<span style="color:#00ff00;"><i class="fas fa-shield-alt"></i> VERY STRONG</span>`;
+    }
+    
+    // Add feedback
+    if (feedback.length > 0) {
+        display.innerHTML += `<br><small>${feedback.join(' ')}</small>`;
+    }
+}
+
+// Port Scanner Simulator
+async function simulatePortScan() {
+    const host = document.getElementById('host-input').value.trim() || 'localhost';
+    const portsInput = document.getElementById('ports-input').value.trim() || '22,80,443';
+    const display = document.getElementById('port-scan-display');
+    
+    try {
+        display.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scanning...';
+        
+        // Simulate scanning delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        const ports = portsInput.split(',').map(p => parseInt(p.trim())).filter(p => !isNaN(p));
+        const commonPorts = {
+            21: 'FTP',
+            22: 'SSH',
+            23: 'Telnet',
+            25: 'SMTP',
+            53: 'DNS',
+            80: 'HTTP',
+            110: 'POP3',
+            143: 'IMAP',
+            443: 'HTTPS',
+            3306: 'MySQL',
+            3389: 'RDP',
+            5432: 'PostgreSQL',
+            8080: 'HTTP-Alt'
+        };
+        
+        let results = [];
+        let openPorts = 0;
+        
+        // Simulate random results
+        ports.forEach(port => {
+            const isOpen = Math.random() > 0.7; // 30% chance port is "open"
+            const service = commonPorts[port] || 'Unknown';
+            
+            if (isOpen) {
+                openPorts++;
+                results.push(`<span style="color:#00ff00;">✓ Port ${port} (${service}) - OPEN</span>`);
+            } else {
+                results.push(`<span style="color:#ff6b6b;">✗ Port ${port} (${service}) - CLOSED</span>`);
+            }
+        });
+        
+        display.innerHTML = `
+            <div style="text-align:left;">
+                <p><strong>Scanning ${host}</strong></p>
+                <p>Found ${openPorts} open ports out of ${ports.length}</p>
+                <div style="max-height:150px; overflow-y:auto; margin-top:10px;">
+                    ${results.join('<br>')}
+                </div>
+                <p><small><i>Note: This is a simulation for educational purposes</i></small></p>
+            </div>
+        `;
+    } catch (error) {
+        display.innerHTML = '<span style="color:#ff6b6b;">Scan failed</span>';
+    }
+}

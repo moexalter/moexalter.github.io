@@ -163,10 +163,65 @@
                     </div>
                 </div>
             </div>
+        </section>
 
+        <!-- Cybersecurity Tools -->
+        <section class="section">
+            <h2><i class="fas fa-shield-alt"></i> Cybersecurity Tools</h2>
+            <div class="grid">
+                <!-- Tool 1: Enhanced IP Lookup -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-network-wired"></i>
+                        <h3>IP Information+</h3>
+                    </div>
+                    <div class="card-body">
+                        <input type="text" id="ip-input" placeholder="Enter IP or domain" class="input-field">
+                        <p id="ip-plus-display">Get detailed IP/domain information</p>
+                        <button class="card-button" onclick="getIPPlusInfo()">
+                            <i class="fas fa-search"></i> Lookup
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tool 2: Password Strength Checker -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-lock"></i>
+                        <h3>Password Strength</h3>
+                    </div>
+                    <div class="card-body">
+                        <input type="password" id="password-input" placeholder="Test password strength" class="input-field">
+                        <div class="password-meter">
+                            <div class="meter-bar" id="password-meter"></div>
+                        </div>
+                        <p id="password-strength-display">Enter a password to test</p>
+                        <button class="card-button" onclick="checkPasswordStrength()">
+                            <i class="fas fa-check"></i> Check Strength
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tool 3: Port Scanner Simulator -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-plug"></i>
+                        <h3>Port Scanner</h3>
+                    </div>
+                    <div class="card-body">
+                        <input type="text" id="host-input" placeholder="Host or IP" class="input-field" value="localhost">
+                        <input type="text" id="ports-input" placeholder="Ports (e.g., 22,80,443)" class="input-field" value="22,80,443,8080">
+                        <p id="port-scan-display">Simulated port scanning</p>
+                        <button class="card-button" onclick="simulatePortScan()">
+                            <i class="fas fa-bolt"></i> Scan Ports
+                        </button>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- Footer -->
+
         <footer>
             <div class="footer-content">
                 <div class="footer-section">
