@@ -201,6 +201,21 @@
                         </button>
                     </div>
                 </div>
+<!-- Tool 3: Port Scanner Simulator -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-plug"></i>
+                        <h3>Port Scanner</h3>
+                    </div>
+                    <div class="card-body">
+                        <input type="text" id="host-input" placeholder="Host or IP" class="input-field" value="localhost">
+                        <input type="text" id="ports-input" placeholder="Ports (e.g., 22,80,443)" class="input-field" value="22,80,443,8080">
+                        <p id="port-scan-display">Simulated port scanning</p>
+                        <button class="card-button" onclick="simulatePortScan()">
+                            <i class="fas fa-bolt"></i> Scan Ports
+                        </button>
+                    </div>
+                </div>
 
                 <!-- Tool 4: Hash Generator -->
                 <div class="card">
@@ -239,7 +254,6 @@
 
 
 
-                </div>
 
                 <!-- Tool 7: Base64 Encoder/Decoder -->
                 <div class="card">
@@ -317,21 +331,7 @@
                     </div>
                 </div>
 
-                <!-- Tool 3: Port Scanner Simulator -->
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fas fa-plug"></i>
-                        <h3>Port Scanner</h3>
-                    </div>
-                    <div class="card-body">
-                        <input type="text" id="host-input" placeholder="Host or IP" class="input-field" value="localhost">
-                        <input type="text" id="ports-input" placeholder="Ports (e.g., 22,80,443)" class="input-field" value="22,80,443,8080">
-                        <p id="port-scan-display">Simulated port scanning</p>
-                        <button class="card-button" onclick="simulatePortScan()">
-                            <i class="fas fa-bolt"></i> Scan Ports
-                        </button>
-                    </div>
-                </div>
+                
             </div>
         </section>
 
