@@ -253,12 +253,12 @@ document.getElementById('myForm').addEventListener('submit', async function(e) {
   
   // Save to Supabase
 const { data, error } = await window.supabaseClient
-    .from('contact_messages')
-    .insert([{ 
-      name: name, 
-      email: email, 
-      message: subject + ": " + message 
-    }])
+  .from('contact_messages')
+  .insert([{ 
+    name: name, 
+    email: email, 
+    message: "Subject: " + subject + "\nMessage: " + message
+  }])
   
   if (error) {
     alert('Error sending message: ' + error.message)
