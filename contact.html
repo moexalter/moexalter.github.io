@@ -36,7 +36,7 @@
 <script>
   const supabaseUrl = 'https://eecvxrcagzksvaboageo.supabase.co'
   const supabaseKey = 'sb_publishable_yVh969gWeMM--mYCEXpQkg_AUIEufDj'
-  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
+  window.supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey)
 </script>
 <body>
 
@@ -252,13 +252,13 @@ document.getElementById('myForm').addEventListener('submit', async function(e) {
   }
   
   // Save to Supabase
-const { data, error } = await window.supabaseClient
-  .from('contact_messages')
-  .insert([{ 
-    name: name, 
-    email: email, 
-    message: "Subject: " + subject + "\nMessage: " + message
-  }])
+  const { data, error } = await window.supabaseClient
+    .from('contact_messages')
+    .insert([{ 
+      name: name, 
+      email: email, 
+      message: "Subject: " + subject + "\nMessage: " + message
+    }])
   
   if (error) {
     alert('Error sending message: ' + error.message)
