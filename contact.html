@@ -32,7 +32,7 @@
 	<link rel="stylesheet" href="css/main.css">
 </head>
 <!-- Add Supabase JS library -->
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const supabaseUrl = 'https://eecvxrcagzksvaboageo.supabase.co'
   const supabaseKey = 'sb_publishable_yVh969gWeMM--mYCEXpQkg_AUIEufDj'
@@ -135,7 +135,7 @@
 								<input name="name" placeholder="Enter your name" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Enter your name'"
 								 class="common-input mb-20 form-control" required="" type="text">
 
-								<input name="email" placeholder="Enter email address" pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{1,63}$" onfocus="this.placeholder = ''"
+								<input name="email" placeholder="Enter email address" pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$" onfocus="this.placeholder = ''"
 								 onblur="this.placeholder = 'Enter email address'" class="common-input mb-20 form-control" required="" type="email">
 
 								<input name="subject" placeholder="Enter your subject" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Enter your subject'"
