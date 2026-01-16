@@ -30,6 +30,213 @@
 	<link rel="stylesheet" href="css/animate.min.css">
 	<link rel="stylesheet" href="css/owl.carousel.css">
 	<link rel="stylesheet" href="css/main.css">
+	
+	<style>
+		/* Professional Contact Form Styling */
+		.contact-page-area {
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			padding: 80px 0;
+			min-height: 100vh;
+		}
+		
+		.contact-container {
+			max-width: 1200px;
+			margin: 0 auto;
+			padding: 0 20px;
+		}
+		
+		.contact-card {
+			background: white;
+			border-radius: 20px;
+			padding: 40px;
+			box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+			margin-bottom: 40px;
+			transition: transform 0.3s ease;
+		}
+		
+		.contact-card:hover {
+			transform: translateY(-5px);
+		}
+		
+		.section-title {
+			text-align: center;
+			color: white;
+			margin-bottom: 50px;
+		}
+		
+		.section-title h1 {
+			font-size: 42px;
+			font-weight: 700;
+			margin-bottom: 15px;
+			text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+		}
+		
+		.section-title p {
+			font-size: 18px;
+			opacity: 0.9;
+		}
+		
+		.info-card {
+			background: white;
+			border-radius: 15px;
+			padding: 30px;
+			margin-bottom: 25px;
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+			transition: all 0.3s ease;
+			border-left: 4px solid #667eea;
+		}
+		
+		.info-card:hover {
+			transform: translateX(10px);
+			box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+		}
+		
+		.info-card .icon {
+			background: #667eea;
+			width: 60px;
+			height: 60px;
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-bottom: 20px;
+		}
+		
+		.info-card .icon span {
+			color: white;
+			font-size: 24px;
+		}
+		
+		.info-card h5 {
+			color: #333;
+			font-size: 20px;
+			font-weight: 600;
+			margin-bottom: 10px;
+		}
+		
+		.info-card p {
+			color: #666;
+			font-size: 16px;
+			line-height: 1.6;
+			margin: 0;
+		}
+		
+		/* Form Styling */
+		.form-card {
+			background: white;
+			border-radius: 15px;
+			padding: 40px;
+			box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+		}
+		
+		.form-group {
+			margin-bottom: 25px;
+		}
+		
+		.form-label {
+			display: block;
+			color: #333;
+			font-weight: 600;
+			margin-bottom: 8px;
+			font-size: 16px;
+		}
+		
+		.form-control {
+			width: 100%;
+			padding: 15px 20px;
+			border: 2px solid #e0e0e0;
+			border-radius: 10px;
+			font-size: 16px;
+			transition: all 0.3s ease;
+			background: #f8f9fa;
+		}
+		
+		.form-control:focus {
+			outline: none;
+			border-color: #667eea;
+			background: white;
+			box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+		}
+		
+		.form-control::placeholder {
+			color: #999;
+		}
+		
+		textarea.form-control {
+			min-height: 150px;
+			resize: vertical;
+		}
+		
+		.submit-btn {
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			color: white;
+			border: none;
+			padding: 16px 40px;
+			border-radius: 10px;
+			font-size: 18px;
+			font-weight: 600;
+			cursor: pointer;
+			transition: all 0.3s ease;
+			display: inline-flex;
+			align-items: center;
+			gap: 10px;
+			box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+		}
+		
+		.submit-btn:hover {
+			transform: translateY(-3px);
+			box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+		}
+		
+		.submit-btn:active {
+			transform: translateY(-1px);
+		}
+		
+		.submit-btn i {
+			font-size: 20px;
+		}
+		
+		.form-row {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 25px;
+			margin-bottom: 25px;
+		}
+		
+		@media (max-width: 768px) {
+			.form-row {
+				grid-template-columns: 1fr;
+			}
+			
+			.contact-card {
+				padding: 25px;
+			}
+			
+			.section-title h1 {
+				font-size: 32px;
+			}
+		}
+		
+		.alert-msg {
+			background: #d4edda;
+			color: #155724;
+			padding: 15px 20px;
+			border-radius: 10px;
+			margin-bottom: 25px;
+			border-left: 4px solid #28a745;
+			display: none;
+		}
+		
+		.alert-msg.show {
+			display: block;
+			animation: fadeIn 0.3s ease;
+		}
+		
+		@keyframes fadeIn {
+			from { opacity: 0; transform: translateY(-10px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+	</style>
 </head>
 <!-- Add Supabase JS library -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -73,103 +280,77 @@
 	</header>
 	<!-- End Header Area -->
 
-	<!-- start banner Area -->
-	<section class="banner-area relative">
-		<div class="container">
-			<div class="row d-flex align-items-center justify-content-center">
-				<div class="about-content col-lg-12">
-					<h1 class="text-white">
-						Contact Us
-					</h1>
-					<p class="link-nav">
-						<span class="box">
-							<a href="index.html">Home </a>
-							<a href="contact.html">Contact</a>
-						</span>
-					</p>
-				</div>
-			</div>
-		</div>
-	</section>
-	<!-- End banner Area -->
-
 	<!-- Start contact-page Area -->
-	<section class="contact-page-area section-gap-top">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-4 d-flex flex-column address-wrap">
-					<div class="single-contact-address d-flex flex-row">
-						<div class="icon">
-							<span class="lnr lnr-home"></span>
-						</div>
-						<div class="contact-details">
-							<h5>Chennai, India</h5>
-							<p>
-								64 TTK Lake Road
-							</p>
-						</div>
-					</div>
-					<div class="single-contact-address d-flex flex-row">
-						<div class="icon">
-							<span class="lnr lnr-phone-handset"></span>
-						</div>
-						<div class="contact-details">
-							<h5>00 (91) 98402 40611</h5>
-							<p>Mon to Fri 9am to 6 pm</p>
-						</div>
-					</div>
-					<div class="single-contact-address d-flex flex-row">
-						<div class="icon">
-							<span class="lnr lnr-envelope"></span>
-						</div>
-						<div class="contact-details">
-							<h5>mohraf@gmail.com</h5>
-							<p>Send us your query anytime!</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-lg-8">
-					<form class="form-area " id="myForm" method="post" class="contact-form text-right">
-						<div class="row">
-							<div class="col-lg-6 form-group form-group-top">
-								<input name="name" placeholder="Enter your name" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Enter your name'"
-								 class="common-input mb-20 form-control" required="" type="text">
-
-								<input name="email" placeholder="Enter email address" pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$" onfocus="this.placeholder = ''"
-								 onblur="this.placeholder = 'Enter email address'" class="common-input mb-20 form-control" required="" type="email">
-
-								<input name="subject" placeholder="Enter your subject" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Enter your subject'"
-								 class="common-input mb-20 form-control" required="" type="text">
+	<section class="contact-page-area">
+		<div class="contact-container">
+			<div class="section-title">
+				<h1>Get In Touch</h1>
+				<p>Have a project in mind? Let's work together</p>
+			</div>
+			
+			<div class="contact-card">
+				<div class="row">
+					<div class="col-lg-4">
+						<div class="info-card">
+							<div class="icon">
+								<span class="lnr lnr-map-marker"></span>
 							</div>
-							<div class="col-lg-6 form-group">
-								<textarea class="common-textarea form-control" name="message" placeholder="Messege" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Messege'"
-								 required=""></textarea>
+							<h5>Our Location</h5>
+							<p>Chennai, India<br>64 TTK Lake Road</p>
+						</div>
+						
+						<div class="info-card">
+							<div class="icon">
+								<span class="lnr lnr-phone"></span>
 							</div>
-							<div class="col-lg-12">
-								<div class="alert-msg" style="text-align: left;"></div>
-
-								<button class="primary-btn" style="float: right;" data-text="Send Message">
-									<span>S</span>
-									<span>e</span>
-									<span>n</span>
-									<span>d</span>
-									<span> </span>
-									<span>M</span>
-									<span>e</span>
-									<span>s</span>
-									<span>s</span>
-									<span>a</span>
-									<span>g</span>
-									<span>e</span>
-
+							<h5>Phone Number</h5>
+							<p>+91 98402 40611<br>Mon - Fri, 9am to 6pm</p>
+						</div>
+						
+						<div class="info-card">
+							<div class="icon">
+								<span class="lnr lnr-envelope"></span>
+							</div>
+							<h5>Email Address</h5>
+							<p>mohraf@gmail.com<br>24/7 Support</p>
+						</div>
+					</div>
+					
+					<div class="col-lg-8">
+						<div class="form-card">
+							<h3 style="color: #333; margin-bottom: 30px; font-size: 28px; font-weight: 700;">Send us a message</h3>
+							
+							<form id="myForm" method="post">
+								<div class="form-row">
+									<div class="form-group">
+										<label class="form-label">Your Name *</label>
+										<input name="name" placeholder="John Doe" class="form-control" required type="text">
+									</div>
+									
+									<div class="form-group">
+										<label class="form-label">Email Address *</label>
+										<input name="email" placeholder="john@example.com" pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$" class="form-control" required type="email">
+									</div>
+								</div>
+								
+								<div class="form-group">
+									<label class="form-label">Subject *</label>
+									<input name="subject" placeholder="Project Inquiry" class="form-control" required type="text">
+								</div>
+								
+								<div class="form-group">
+									<label class="form-label">Your Message *</label>
+									<textarea name="message" placeholder="Tell us about your project..." class="form-control" required></textarea>
+								</div>
+								
+								<div class="alert-msg" id="form-message"></div>
+								
+								<button type="submit" class="submit-btn">
+									<i class="fa fa-paper-plane"></i> Send Message
 								</button>
-							</div>
+							</form>
 						</div>
-					</form>
-				</div>
-
-				<div class="col-lg-12">
-					<div class="map-wrap" style="width:100%; height: 445px;" id="map"></div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -239,32 +420,68 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 document.getElementById('myForm').addEventListener('submit', async function(e) {
   e.preventDefault() // Stop page refresh
   
+  const messageDiv = document.getElementById('form-message');
+  const submitBtn = this.querySelector('button[type="submit"]');
+  const originalBtnText = submitBtn.innerHTML;
+  
+  // Show loading state
+  submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Sending...';
+  submitBtn.disabled = true;
+  
   // Get form values
-  const name = document.querySelector('input[name="name"]').value
-  const email = document.querySelector('input[name="email"]').value
-  const subject = document.querySelector('input[name="subject"]').value
-  const message = document.querySelector('textarea[name="message"]').value
+  const name = document.querySelector('input[name="name"]').value.trim();
+  const email = document.querySelector('input[name="email"]').value.trim();
+  const subject = document.querySelector('input[name="subject"]').value.trim();
+  const message = document.querySelector('textarea[name="message"]').value.trim();
   
   // Validate
-  if (!name || !email || !message) {
-    alert('Please fill in all required fields')
-    return
+  if (!name || !email || !subject || !message) {
+    messageDiv.innerHTML = 'Please fill in all required fields';
+    messageDiv.className = 'alert-msg show';
+    messageDiv.style.background = '#f8d7da';
+    messageDiv.style.color = '#721c24';
+    messageDiv.style.borderLeftColor = '#dc3545';
+    
+    submitBtn.innerHTML = originalBtnText;
+    submitBtn.disabled = false;
+    return;
   }
   
   // Save to Supabase
-  const { data, error } = await window.supabaseClient
-    .from('contact_messages')
-    .insert([{ 
-      name: name, 
-      email: email, 
-      message: "Subject: " + subject + "\nMessage: " + message
-    }])
-  
-  if (error) {
-    alert('Error sending message: ' + error.message)
-  } else {
-    alert('Message sent successfully!')
-    this.reset() // Clear form
+  try {
+    const { data, error } = await window.supabaseClient
+      .from('contact_messages')
+      .insert([{ 
+        name: name, 
+        email: email, 
+        message: "Subject: " + subject + "\n\nMessage: " + message
+      }])
+    
+    if (error) {
+      throw new Error(error.message);
+    }
+    
+    // Success message
+    messageDiv.innerHTML = '✓ Message sent successfully! We\'ll get back to you soon.';
+    messageDiv.className = 'alert-msg show';
+    messageDiv.style.background = '#d4edda';
+    messageDiv.style.color = '#155724';
+    messageDiv.style.borderLeftColor = '#28a745';
+    
+    // Clear form
+    this.reset();
+    
+  } catch (error) {
+    // Error message
+    messageDiv.innerHTML = '✗ Error: ' + error.message;
+    messageDiv.className = 'alert-msg show';
+    messageDiv.style.background = '#f8d7da';
+    messageDiv.style.color = '#721c24';
+    messageDiv.style.borderLeftColor = '#dc3545';
+  } finally {
+    // Restore button
+    submitBtn.innerHTML = originalBtnText;
+    submitBtn.disabled = false;
   }
 })
 </script>
