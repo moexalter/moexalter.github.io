@@ -18,6 +18,9 @@
         .visitor { background: #e3f2fd; margin-right: auto; }
         .admin { background: #667eea; color: white; margin-left: auto; }
     </style>
+    
+    <!-- SUPABASE LIBRARY MUST BE LOADED FIRST -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="container">
@@ -40,21 +43,28 @@
     </div>
 
     <script>
-        // Supabase initialization - ONLY ONCE
-        (function() {
+        // Wait for the page to load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Supabase
             const supabaseUrl = 'https://eecvxrcagzksvaboageo.supabase.co';
             const supabaseKey = 'sb_publishable_yVh969gWeMM--mYCEXpQkg_AUIEufDj';
             
-            // Create Supabase client
-            window.supabase = supabase.createClient(supabaseUrl, supabaseKey);
+            // Check if supabase library is loaded
+            if (typeof supabase === 'undefined') {
+                console.error('Supabase library not loaded!');
+                document.getElementById('messages').innerHTML = 'Error: Supabase library failed to load.';
+                return;
+            }
             
-            console.log('Supabase initialized');
+            // Create client
+            const client = supabase.createClient(supabaseUrl, supabaseKey);
+            console.log('Supabase client created');
             
-            // Start the app
-            initializeApp();
-        })();
+            // Initialize the app
+            initializeApp(client);
+        });
         
-        function initializeApp() {
+        function initializeApp(supabaseClient) {
             const messagesDiv = document.getElementById('messages');
             const messageInput = document.getElementById('messageInput');
             const sendBtn = document.getElementById('sendBtn');
@@ -63,13 +73,19 @@
             // Load messages
             async function loadMessages() {
                 try {
-                    const { data, error } = await window.supabase
+                    console.log('Loading messages...');
+                    const { data, error } = await supabaseClient
                         .from('mo_chat_messages')
                         .select('*')
                         .order('timestamp', { ascending: true });
                     
-                    if (error) throw error;
+                    if (error) {
+                        console.error('Supabase error:', error);
+                        messagesDiv.innerHTML = 'Error loading: ' + error.message;
+                        return;
+                    }
                     
+                    console.log('Loaded', data.length, 'messages');
                     displayMessages(data);
                     updateConversations(data);
                     
@@ -81,7 +97,7 @@
             
             function displayMessages(messages) {
                 if (messages.length === 0) {
-                    messagesDiv.innerHTML = 'No messages yet';
+                    messagesDiv.innerHTML = 'No messages yet. Send one from the chat page.';
                     return;
                 }
                 
@@ -89,9 +105,10 @@
                 
                 messages.forEach(msg => {
                     const div = document.createElement('div');
-                    div.className = `message ${msg.sender === 'You' || msg.sender === 'Visitor' ? 'visitor' : 'admin'}`;
+                    const isVisitor = msg.sender === 'You' || msg.sender === 'Visitor';
+                    div.className = `message ${isVisitor ? 'visitor' : 'admin'}`;
                     div.innerHTML = `
-                        <strong>${msg.sender}:</strong> ${msg.message || ''}
+                        <strong>${msg.sender}:</strong> ${msg.message || '(file shared)'}
                         <br><small>${new Date(msg.timestamp).toLocaleTimeString()}</small>
                     `;
                     messagesDiv.appendChild(div);
@@ -120,7 +137,8 @@
                 sendBtn.textContent = 'Sending...';
                 
                 try {
-                    const { error } = await window.supabase
+                    console.log('Sending message:', text);
+                    const { data, error } = await supabaseClient
                         .from('mo_chat_messages')
                         .insert([
                             { 
@@ -131,25 +149,31 @@
                             }
                         ]);
                     
-                    if (error) throw error;
+                    if (error) {
+                        console.error('Send error:', error);
+                        alert('Failed to send: ' + error.message + '\n\nCheck RLS policies in Supabase.');
+                        return;
+                    }
                     
+                    console.log('Message sent:', data);
                     messageInput.value = '';
                     loadMessages(); // Reload
                     
                 } catch (error) {
-                    console.error('Send error:', error);
-                    alert('Failed to send: ' + error.message);
+                    console.error('Unexpected error:', error);
+                    alert('Failed to send');
                 } finally {
                     sendBtn.disabled = false;
                     sendBtn.textContent = 'Send';
+                    messageInput.focus();
                 }
             }
             
             // Real-time updates
-            window.supabase
+            supabaseClient
                 .channel('mo_chat')
                 .on('INSERT', payload => {
-                    console.log('New message:', payload.new);
+                    console.log('New message received:', payload.new);
                     loadMessages();
                 })
                 .subscribe();
