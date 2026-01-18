@@ -492,6 +492,141 @@
 </body>
 
 
+
+
+
+<!-- ======= Live Chat Widget ======= -->
+<div id="chat-widget" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+  <button id="chat-toggle" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 24px; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+    💬
+  </button>
+  
+  <div id="chat-window" style="display: none; width: 350px; height: 500px; background: white; border-radius: 15px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); margin-bottom: 15px; overflow: hidden; flex-direction: column;">
+    
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h3 style="margin: 0; font-size: 18px;">Live Chat</h3>
+          <p style="margin: 5px 0 0; font-size: 12px; opacity: 0.9;">Online • Real-time</p>
+        </div>
+        <button id="chat-close" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">
+          ×
+        </button>
+      </div>
+    </div>
+    
+    <div id="chat-messages" style="flex: 1; padding: 20px; overflow-y: auto; background: #f8f9fa;">
+      <div style="text-align: center; margin: 20px 0;">
+        <span style="background: #e9ecef; padding: 5px 15px; border-radius: 15px; font-size: 12px; color: #666;">
+          Welcome! Type a message to start chatting.
+        </span>
+      </div>
+    </div>
+    
+    <div style="border-top: 1px solid #e0e0e0; padding: 15px; background: white;">
+      <div style="display: flex; gap: 10px;">
+        <input type="text" id="chat-input" placeholder="Type your message..." style="flex: 1; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 25px; font-size: 14px;">
+        <button id="chat-send" style="background: #667eea; color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 18px;">
+          →
+        </button>
+      </div>
+      <p style="font-size: 11px; color: #999; text-align: center; margin: 10px 0 0;">
+        Press Enter to send
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+// Simple chat functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const chatToggle = document.getElementById('chat-toggle');
+  const chatWindow = document.getElementById('chat-window');
+  const chatClose = document.getElementById('chat-close');
+  const chatInput = document.getElementById('chat-input');
+  const chatSend = document.getElementById('chat-send');
+  const chatMessages = document.getElementById('chat-messages');
+  
+  let isChatOpen = false;
+  let messageCount = 0;
+  
+  // Toggle chat window
+  chatToggle.addEventListener('click', function() {
+    isChatOpen = !isChatOpen;
+    chatWindow.style.display = isChatOpen ? 'flex' : 'none';
+  });
+  
+  // Close chat
+  chatClose.addEventListener('click', function() {
+    isChatOpen = false;
+    chatWindow.style.display = 'none';
+  });
+  
+  // Send message
+  chatSend.addEventListener('click', sendMessage);
+  
+  // Send on Enter key
+  chatInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
+  });
+  
+  function sendMessage() {
+    const message = chatInput.value.trim();
+    if (!message) return;
+    
+    // Add user message
+    addMessage('You', message, true);
+    chatInput.value = '';
+    messageCount++;
+    
+    // Auto-reply after 1 second
+    setTimeout(function() {
+      const replies = [
+        "Thanks for your message! How can I help you?",
+        "I'll get back to you shortly.",
+        "That's interesting! Tell me more.",
+        "Thanks for reaching out!",
+        "I'm here to help. What do you need?"
+      ];
+      const reply = replies[Math.floor(Math.random() * replies.length)];
+      addMessage('Support Bot', reply, false);
+    }, 1000);
+  }
+  
+  function addMessage(sender, text, isUser) {
+    const messageDiv = document.createElement('div');
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    messageDiv.innerHTML = `
+      <div style="margin-bottom: 15px; display: flex; ${isUser ? 'justify-content: flex-end;' : ''}">
+        <div style="max-width: 80%; background: ${isUser ? '#667eea' : 'white'}; 
+                    color: ${isUser ? 'white' : '#333'}; 
+                    padding: 10px 15px; border-radius: 18px; 
+                    border: ${!isUser ? '1px solid #e0e0e0' : 'none'};
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+          <div style="font-weight: 600; font-size: 12px; margin-bottom: 3px;">${sender}</div>
+          <div style="font-size: 14px;">${text}</div>
+          <div style="font-size: 10px; opacity: 0.7; text-align: right; margin-top: 5px;">${time}</div>
+        </div>
+      </div>
+    `;
+    
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+  
+  // Auto welcome message
+  setTimeout(function() {
+    if (messageCount === 0) {
+      addMessage('Support Bot', 'Hello! 👋 Need any help with the website?', false);
+    }
+  }, 3000);
+});
+</script>
+<!-- ======= End Live Chat Widget ======= -->
+
 <!-- ======= Expert Trading Recommendations ======= -->
 <section style="background: #fff; padding: 80px 0; border-top: 1px solid #eee;">
   <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
