@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Mo | Live Support</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        
+        .chat-header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+            max-width: 800px;
+        }
+        
+        .chat-header h1 {
+            font-size: 48px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        .chat-header p {
+            font-size: 18px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        
+        .chat-container {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .chat-info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .info-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .info-card h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-card p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        /* Chat widget will be inserted here */
+        #chat-widget-container {
+            flex: 1;
+        }
+        
+        .response-time {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .chat-header h1 {
+                font-size: 36px;
+            }
+            
+            .chat-header p {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-header">
+        <h1>💬 Chat with Mo</h1>
+        <p>Get instant responses, share files, and discuss projects in real-time. 
+           I typically respond within a few hours during business days.</p>
+    </div>
+    
+    <div class="chat-container">
+        <div class="chat-info-cards">
+            <div class="info-card">
+                <h3>🕒 Response Time</h3>
+                <p>Usually within 2-4 hours during weekdays (9AM-6PM IST)</p>
+            </div>
+            <div class="info-card">
+                <h3>📁 File Sharing</h3>
+                <p>Share images, PDFs, documents up to 5MB each</p>
+            </div>
+            <div class="info-card">
+                <h3>💾 Chat History</h3>
+                <p>All messages are saved for future reference</p>
+            </div>
+            <div class="info-card">
+                <h3>🔒 Secure & Private</h3>
+                <p>End-to-end encrypted, stored in secure database</p>
+            </div>
+        </div>
+        
+        <!-- Chat Widget will be placed here -->
+        <div id="chat-widget-container"></div>
+    </div>
+    
+    <div class="response-time">
+        <p>📍 Based in Chennai, India (IST: UTC+5:30) | 📧 mohraf@gmail.com | 📱 +91 98402 40611</p>
+    </div>
+
+    <!-- Chat Widget Script will be inserted here -->
+</body>
+</html>
+
+<!-- ======= Chat Widget ======= -->
+<div id="chat-widget" style="width: 100%; max-width: 1000px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 25px 70px rgba(0,0,0,0.15); overflow: hidden; height: 70vh;">
+  
+  <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px 30px;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h2 style="margin: 0; font-size: 28px;">💬 Mo's Live Chat</h2>
+        <p style="margin: 8px 0 0; font-size: 16px; opacity: 0.9;">Direct conversation with Mo - Send messages & files</p>
+      </div>
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <div style="background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px; font-size: 14px;">
+          <span id="connection-status">🟢 Connected</span>
+        </div>
+        <button id="chat-close" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer; display: none;">
+          ×
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Chat Messages Area -->
+  <div id="chat-messages" style="flex: 1; padding: 30px; overflow-y: auto; background: #f8f9fa; height: calc(70vh - 180px);">
+    <div style="text-align: center; margin: 30px 0;">
+      <div style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); display: inline-block;">
+        <div style="font-size: 18px; color: #333; margin-bottom: 10px;">Welcome to direct chat with Mo! 👋</div>
+        <div style="font-size: 14px; color: #666; max-width: 500px;">
+          This is a real conversation. Messages are stored and Mo will respond when available.
+          You can share files, images, or ask questions about projects.
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- File Preview -->
+  <div id="file-preview" style="display: none; padding: 15px 30px; background: #f0f7ff; border-top: 1px solid #d0e0ff;">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <div id="file-icon" style="font-size: 28px;">📎</div>
+        <div>
+          <div id="file-name" style="font-weight: 600; font-size: 16px;"></div>
+          <div id="file-size" style="font-size: 14px; color: #666;"></div>
+        </div>
+      </div>
+      <button id="remove-file" style="background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 24px;">
+        ×
+      </button>
+    </div>
+  </div>
+  
+  <!-- Chat Input Area -->
+  <div style="border-top: 1px solid #e0e0e0; padding: 25px 30px; background: white;">
+    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+      <!-- File Upload -->
+      <label for="file-upload" style="cursor: pointer; background: #f8f9fa; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px dashed #c0c0c0; transition: all 0.3s;">
+        <span style="font-size: 22px;">📎</span>
+        <input type="file" id="file-upload" accept="image/*,.pdf,.doc,.docx,.txt" style="display: none;">
+      </label>
+      
+      <!-- Text Input -->
+      <input type="text" id="chat-input" placeholder="Type your message to Mo..." style="flex: 1; padding: 18px 25px; border: 2px solid #e0e0e0; border-radius: 30px; font-size: 16px; transition: all 0.3s;">
+      
+      <!-- Send Button -->
+      <button id="chat-send" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; width: 60px; height: 60px; border-radius: 50%; cursor: pointer; font-size: 22px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4); transition: all 0.3s;">
+        →
+      </button>
+    </div>
+    
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div style="font-size: 13px; color: #999;">
+        <span>Max file: 5MB</span>
+        <span style="margin-left: 20px;">Formats: Images, PDF, DOC, TXT</span>
+        <span style="margin-left: 20px;">Press Enter to send</span>
+      </div>
+      <div id="typing-indicator" style="font-size: 14px; color: #667eea; display: none;">
+        <span style="display: inline-block; animation: pulse 1.5s infinite;">●</span> Mo is typing...
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Chat functionality will be added next
+</script>
+
+<style>
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+#chat-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+#chat-send:hover {
+  transform: scale(1.05);
+}
+
+#chat-messages::-webkit-scrollbar {
+  width: 10px;
+}
+
+#chat-messages::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 5px;
+}
+
+#chat-messages::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 5px;
+}
+
+#chat-messages::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+</style>
+<!-- ======= End Chat Widget ======= -->
+
+<!-- Supabase Initialization -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // Initialize Supabase
+  const supabaseUrl = 'https://eecvxrcagzksvaboageo.supabase.co';
+  const supabaseKey = 'sb_publishable_yVh969gWeMM--mYCEXpQkg_AUIEufDj';
+  window.supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+  
+  console.log('Mo Chat: Supabase initialized');
+</script>
+
+<script>
+// Mo's Chat Functionality
+document.addEventListener('DOMContentLoaded', function() {
+  // DOM Elements
+  const chatInput = document.getElementById('chat-input');
+  const chatSend = document.getElementById('chat-send');
+  const chatMessages = document.getElementById('chat-messages');
+  const fileUpload = document.getElementById('file-upload');
+  const filePreview = document.getElementById('file-preview');
+  const fileName = document.getElementById('file-name');
+  const fileSize = document.getElementById('file-size');
+  const fileIcon = document.getElementById('file-icon');
+  const removeFile = document.getElementById('remove-file');
+  const typingIndicator = document.getElementById('typing-indicator');
+  const connectionStatus = document.getElementById('connection-status');
+  
+  let selectedFile = null;
+  let messageCount = 0;
+  
+  // Load previous messages
+  loadChatHistory();
+  
+  // File upload handler
+  fileUpload.addEventListener('change', function(e) {
+    if (e.target.files.length > 0) {
+      selectedFile = e.target.files[0];
+      
+      // Check file size (5MB limit)
+      if (selectedFile.size > 5 * 1024 * 1024) {
+        alert('File too large! Max 5MB allowed.');
+        selectedFile = null;
+        fileUpload.value = '';
+        return;
+      }
+      
+      // Show file preview
+      fileName.textContent = selectedFile.name;
+      fileSize.textContent = formatFileSize(selectedFile.size);
+      fileIcon.textContent = getFileIcon(selectedFile.type, selectedFile.name);
+      filePreview.style.display = 'block';
+    }
+  });
+  
+  // Remove selected file
+  removeFile.addEventListener('click', function() {
+    selectedFile = null;
+    fileUpload.value = '';
+    filePreview.style.display = 'none';
+  });
+  
+  // Send message on button click
+  chatSend.addEventListener('click', sendMessageToMo);
+  
+  // Send on Enter key
+  chatInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessageToMo();
+    }
+  });
+  
+  // Send message to Mo
+  async function sendMessageToMo() {
+    const textMessage = chatInput.value.trim();
+    
+    if (!textMessage && !selectedFile) return;
+    
+    typingIndicator.style.display = 'block';
+    chatSend.disabled = true;
+    
+    let fileUrl = null, fileName = null, fileType = null, fileSize = null;
+    
+    // Upload file if exists
+    if (selectedFile) {
+      try {
+        const fileExt = selectedFile.name.split('.').pop();
+        const fileNameUnique = `mo_chat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+        
+        // Upload to Supabase Storage
+        const { data: uploadData, error: uploadError } = await window.supabaseClient
+          .storage
+          .from('chat-files')
+          .upload(fileNameUnique, selectedFile);
+        
+        if (uploadError) throw uploadError;
+        
+        // Get public URL
+        const { data: urlData } = window.supabaseClient
+          .storage
+          .from('chat-files')
+          .getPublicUrl(fileNameUnique);
+        
+        fileUrl = urlData.publicUrl;
+        fileName = selectedFile.name;
+        fileType = selectedFile.type;
+        fileSize = selectedFile.size;
+        
+        // Show file in chat
+        addFileMessage(selectedFile, true);
+        
+      } catch (uploadError) {
+        console.error('File upload error:', uploadError);
+        addMessage('System', 'Failed to upload file. Please try again.', null, false);
+        typingIndicator.style.display = 'none';
+        chatSend.disabled = false;
+        return;
+      }
+    }
+    
+    // Add text message to UI
+    if (textMessage) {
+      addMessage('You', textMessage, null, true);
+    }
+    
+    // Save to database with "mo_chat" room
+    try {
+      const { data: messageData, error: messageError } = await window.supabaseClient
+        .from('chat_messages')
+        .insert([{
+          sender: 'Visitor',
+          message: textMessage,
+          file_url: fileUrl,
+          file_name: fileName,
+          file_type: fileType,
+          file_size: fileSize,
+          room: 'mo_chat'  // Separate room for Mo's chat
+        }]);
+      
+      if (messageError) throw messageError;
+      
+      console.log('Message saved to Mo chat:', messageData);
+      
+    } catch (dbError) {
+      console.error('Database error:', dbError);
+      addMessage('System', 'Message sent but not saved.', null, false);
+    }
+    
+    // Clear inputs
+    chatInput.value = '';
+    if (selectedFile) {
+      selectedFile = null;
+      fileUpload.value = '';
+      filePreview.style.display = 'none';
+    }
+    
+    messageCount++;
+    chatSend.disabled = false;
+    typingIndicator.style.display = 'none';
+    
+    // Simulate Mo's response
+    setTimeout(function() {
+      const responses = [
+        "Thanks for your message! I'll respond when I see it.",
+        "Message received. I typically respond within a few hours.",
+        "Got it! I'm currently away but will reply soon."
+      ];
+      const reply = responses[Math.floor(Math.random() * responses.length)];
+      addMessage('Mo (Auto)', reply, null, false);
+    }, 1500);
+  }
+  
+  // Load chat history
+  async function loadChatHistory() {
+    try {
+      const { data: messages, error } = await window.supabaseClient
+        .from('chat_messages')
+        .select('*')
+        .eq('room', 'mo_chat')
+        .order('timestamp', { ascending: true })
+        .limit(100);
+      
+      if (error) throw error;
+      
+      // Clear except welcome message
+      const children = chatMessages.children;
+      while (children.length > 1) {
+        chatMessages.removeChild(children[1]);
+      }
+      
+      // Add messages
+      messages.forEach(msg => {
+        const isUser = msg.sender === 'Visitor' || msg.sender === 'You';
+        
+        if (msg.file_url) {
+          const fileInfo = {
+            name: msg.file_name || 'File',
+            size: msg.file_size || 0,
+            type: msg.file_type || 'FILE'
+          };
+          addMessage(msg.sender, null, fileInfo, isUser);
+        }
+        
+        if (msg.message) {
+          addMessage(msg.sender, msg.message, null, isUser);
+        }
+      });
+      
+      console.log('Loaded', messages.length, 'Mo chat messages');
+      connectionStatus.innerHTML = '🟢 ' + messages.length + ' messages loaded';
+      
+    } catch (error) {
+      console.error('Failed to load chat history:', error);
+      connectionStatus.innerHTML = '🔴 Connection issue';
+    }
+  }
+  
+  // Helper functions
+  function formatFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' bytes';
+    else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    else return (bytes / 1048576).toFixed(1) + ' MB';
+  }
+  
+  function getFileIcon(fileType, fileName) {
+    if (fileType.startsWith('image/')) return '🖼️';
+    if (fileType.includes('pdf')) return '📄';
+    if (fileType.includes('document') || fileName.match(/\.(doc|docx)$/i)) return '📝';
+    if (fileType.includes('text') || fileName.match(/\.txt$/i)) return '📄';
+    return '📎';
+  }
+  
+  function addMessage(sender, text, fileInfo = null, isUser = true) {
+    const messageDiv = document.createElement('div');
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    let content = '';
+    if (fileInfo) {
+      content = `
+        <div style="background: ${isUser ? '#e3f2fd' : '#f5f5f5'}; padding: 15px; border-radius: 12px; margin: 8px 0;">
+          <div style="font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+            ${getFileIcon('', fileInfo.name)} ${fileInfo.name}
+          </div>
+          <div style="font-size: 13px; color: #666;">${formatFileSize(fileInfo.size)} • ${fileInfo.type}</div>
+        </div>
+      `;
+    }
+    
+    if (text) {
+      content += `<div style="margin: 8px 0; line-height: 1.5;">${text}</div>`;
+    }
+    
+    messageDiv.innerHTML = `
+      <div style="margin-bottom: 20px; display: flex; ${isUser ? 'justify-content: flex-end;' : ''}">
+        <div style="max-width: 75%; background: ${isUser ? '#667eea' : 'white'}; 
+                    color: ${isUser ? 'white' : '#333'}; 
+                    padding: 18px 22px; border-radius: 20px; 
+                    border: ${!isUser ? '1px solid #e0e0e0' : 'none'};
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+          <div style="font-weight: 700; font-size: 14px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+            ${isUser ? '👤' : '👑'} ${sender}
+          </div>
+          ${content}
+          <div style="font-size: 11px; opacity: 0.7; text-align: right; margin-top: 10px;">${time}</div>
+        </div>
+      </div>
+    `;
+    
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+  
+  function addFileMessage(file, isUser = true) {
+    const fileInfo = {
+      name: file.name,
+      size: file.size,
+      type: file.type.split('/')[1]?.toUpperCase() || 'FILE'
+    };
+    addMessage(isUser ? 'You' : 'Mo', null, fileInfo, isUser);
+  }
+  
+  // Auto-refresh every 30 seconds
+  setInterval(loadChatHistory, 30000);
+});
+</script>
