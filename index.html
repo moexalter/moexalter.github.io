@@ -571,6 +571,9 @@
 </div>
 
 <script>
+
+
+
 // Enhanced chat with file upload
 document.addEventListener('DOMContentLoaded', function() {
   // DOM Elements
@@ -648,6 +651,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   
   // Send message function
+  // Send message function with real Supabase upload
   async function sendMessage() {
     const textMessage = chatInput.value.trim();
     
@@ -656,15 +660,77 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Show typing indicator
     typingIndicator.style.display = 'block';
+    chatSend.disabled = true;
     
-    // Add user message to UI immediately
+    let fileUrl = null;
+    let fileName = null;
+    let fileType = null;
+    let fileSize = null;
+    
+    // Upload file if exists
+    if (selectedFile) {
+      try {
+        // Generate unique file name
+        const fileExt = selectedFile.name.split('.').pop();
+        const fileNameUnique = `chat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+        
+        // Upload to Supabase Storage
+        const { data: uploadData, error: uploadError } = await window.supabaseClient
+          .storage
+          .from('chat-files')
+          .upload(fileNameUnique, selectedFile);
+        
+        if (uploadError) throw uploadError;
+        
+        // Get public URL
+        const { data: urlData } = window.supabaseClient
+          .storage
+          .from('chat-files')
+          .getPublicUrl(fileNameUnique);
+        
+        fileUrl = urlData.publicUrl;
+        fileName = selectedFile.name;
+        fileType = selectedFile.type;
+        fileSize = selectedFile.size;
+        
+        // Show file in chat
+        addFileMessage(selectedFile, true);
+        
+      } catch (uploadError) {
+        console.error('File upload error:', uploadError);
+        addMessage('System', 'Failed to upload file. Please try again.', null, false);
+        typingIndicator.style.display = 'none';
+        chatSend.disabled = false;
+        return;
+      }
+    }
+    
+    // Add text message to UI
     if (textMessage) {
       addMessage('You', textMessage, null, true);
     }
     
-    if (selectedFile) {
-      // Show file in chat
-      addFileMessage(selectedFile, true);
+    // Save message to database
+    try {
+      const { data: messageData, error: messageError } = await window.supabaseClient
+        .from('chat_messages')
+        .insert([{
+          sender: 'Visitor',
+          message: textMessage,
+          file_url: fileUrl,
+          file_name: fileName,
+          file_type: fileType,
+          file_size: fileSize,
+          room: 'main'
+        }]);
+      
+      if (messageError) throw messageError;
+      
+      console.log('Message saved to database:', messageData);
+      
+    } catch (dbError) {
+      console.error('Database error:', dbError);
+      addMessage('System', 'Message sent but not saved to history.', null, false);
     }
     
     // Clear inputs
@@ -676,32 +742,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     messageCount++;
+    chatSend.disabled = false;
+    typingIndicator.style.display = 'none';
     
-    // Simulate file upload and bot response
+    // Simulate bot response (for now)
     setTimeout(function() {
-      typingIndicator.style.display = 'none';
-      
-      // Bot responses
-      if (selectedFile) {
-        const fileResponses = [
-          "Thanks for sharing the file! I've received it.",
-          "File received successfully. I'll review it.",
-          "Got your document! Thanks for uploading."
-        ];
-        const reply = fileResponses[Math.floor(Math.random() * fileResponses.length)];
-        addMessage('Support Bot', reply, null, false);
-      } else if (textMessage) {
-        const textResponses = [
-          "Thanks for your message! How can I help?",
-          "I understand. Let me know if you need more details.",
-          "Got it! Is there anything specific you need help with?"
-        ];
-        const reply = textResponses[Math.floor(Math.random() * textResponses.length)];
-        addMessage('Support Bot', reply, null, false);
-      }
-    }, 1500);
-  }
-  
+      const responses = [
+        "Thanks for your message! I've received it.",
+        "Message received. How can I help you?",
+        "Got it! Let me know if you need anything else."
+      ];
+      const reply = responses[Math.floor(Math.random() * responses.length)];
+      addMessage('Support Bot', reply, null, false);
+    }, 1000);
+  }  
   // Helper: Format file size
   function formatFileSize(bytes) {
     if (bytes < 1024) return bytes + ' bytes';
