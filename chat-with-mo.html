@@ -457,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function() {
       updateChatStatus('saving', '💾 Saving message...');
       
       const { data: messageData, error: messageError } = await window.supabaseClient
-        .from('chat_messages')
+        .from('mo_chat_messages')
         .insert([{
           sender: 'You',
           message: textMessage,
@@ -520,7 +520,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // Save Mo's response to database
       try {
         const { data: responseData, error: responseError } = await window.supabaseClient
-          .from('chat_messages')
+          .from('mo_chat_messages')
           .insert([{
             sender: 'Mo',
             message: moResponse,
@@ -560,7 +560,7 @@ document.addEventListener('DOMContentLoaded', function() {
   async function loadChatHistory() {
     try {
       const { data: messages, error } = await window.supabaseClient
-        .from('chat_messages')
+        .from('mo_chat_messages')
         .select('*')
         .eq('room', 'mo_chat')
         .order('timestamp', { ascending: true })
