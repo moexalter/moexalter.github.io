@@ -3,70 +3,44 @@
 <head>
     <title>Mo's Admin Chat</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
-        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; text-align: center; }
-        .header h1 { margin: 0; font-size: 28px; display: flex; align-items: center; justify-content: center; gap: 15px; }
-        .main { display: flex; height: 70vh; }
-        .sidebar { width: 300px; border-right: 1px solid #e0e0e0; padding: 20px; overflow-y: auto; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; }
+        .header h1 { margin: 0; display: flex; align-items: center; gap: 10px; }
+        .main { display: flex; min-height: 500px; }
+        .sidebar { width: 300px; border-right: 1px solid #ddd; padding: 15px; }
         .chat-area { flex: 1; display: flex; flex-direction: column; }
-        .messages { flex: 1; padding: 25px; overflow-y: auto; background: #f8f9fa; }
-        .input-area { padding: 20px; border-top: 1px solid #e0e0e0; display: flex; gap: 15px; background: white; }
-        .input-area input { flex: 1; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; outline: none; }
-        .input-area input:focus { border-color: #667eea; }
-        .input-area button { padding: 15px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: transform 0.2s; }
-        .input-area button:hover { transform: translateY(-2px); }
-        .conversation { padding: 15px; border-radius: 10px; margin-bottom: 10px; cursor: pointer; border: 2px solid transparent; }
-        .conversation:hover { background: #f0f0f0; }
-        .conversation.active { background: #e3f2fd; border-color: #667eea; }
-        .message { margin: 15px 0; max-width: 70%; }
-        .visitor { margin-right: auto; }
-        .admin { margin-left: auto; }
-        .message-bubble { padding: 15px 20px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        .visitor .message-bubble { background: white; border: 1px solid #e0e0e0; }
-        .admin .message-bubble { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
-        .message-sender { font-weight: bold; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-        .message-time { font-size: 12px; opacity: 0.7; margin-top: 8px; text-align: right; }
+        .messages { flex: 1; padding: 20px; overflow-y: auto; background: #f8f9fa; }
+        .input-area { padding: 15px; border-top: 1px solid #ddd; display: flex; gap: 10px; }
+        input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .message { margin: 10px 0; padding: 10px; border-radius: 8px; max-width: 70%; }
+        .visitor { background: white; border: 1px solid #ddd; margin-right: auto; }
+        .admin { background: #667eea; color: white; margin-left: auto; }
         .empty { text-align: center; padding: 40px; color: #666; }
-        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .stat-box { background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center; }
-        .stat-number { font-size: 24px; font-weight: bold; color: #667eea; }
-        .stat-label { font-size: 12px; color: #666; margin-top: 5px; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>👑 Mo's Admin Chat Dashboard</h1>
-            <p>Real-time chat with website visitors</p>
+            <h1>👑 Admin Chat</h1>
         </div>
         
         <div class="main">
             <div class="sidebar">
-                <div class="stats">
-                    <div class="stat-box">
-                        <div class="stat-number" id="totalChats">0</div>
-                        <div class="stat-label">Total Chats</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-number" id="unreadCount">0</div>
-                        <div class="stat-label">Unread</div>
-                    </div>
-                </div>
-                
-                <h3>Active Conversations</h3>
+                <h3>Conversations</h3>
                 <div id="conversations">
-                    <div class="empty">Loading conversations...</div>
+                    <div class="empty">Loading...</div>
                 </div>
             </div>
             
             <div class="chat-area">
                 <div class="messages" id="messages">
-                    <div class="empty">Select a conversation to start chatting</div>
+                    <div class="empty">Select a conversation</div>
                 </div>
                 <div class="input-area" id="inputArea" style="display: none;">
-                    <input type="text" id="messageInput" placeholder="Type your reply..." autocomplete="off">
-                    <button id="sendBtn">Send Message</button>
+                    <input type="text" id="messageInput" placeholder="Type reply..." autocomplete="off">
+                    <button id="sendBtn">Send</button>
                 </div>
             </div>
         </div>
@@ -74,212 +48,160 @@
 
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
-        // YOUR SUPABASE CREDENTIALS (from your existing chat)
-        const supabaseUrl = 'https://eecvxrcagzksvaboageo.supabase.co';
-        const supabaseKey = 'sb_publishable_yVh969gWeMM--mYCEXpQkg_AUIEufDj';
+        // INITIALIZE SUPABASE ONLY ONCE
+        (function() {
+            // Your Supabase credentials
+            const supabaseUrl = 'https://eecvxrcagzksvaboageo.supabase.co';
+            const supabaseKey = 'sb_publishable_yVh969gWeMM--mYCEXpQkg_AUIEufDj';
+            
+            // Create Supabase client
+            window.supabase = supabase.createClient(supabaseUrl, supabaseKey);
+            
+            // Start the app
+            initializeApp();
+        })();
         
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-        let currentChat = 'visitor_default';
-        let conversations = {};
-        
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            loadMessages();
-            setupRealtime();
-            setupEventListeners();
-        });
-        
-        // Load all messages
-        async function loadMessages() {
-            try {
-                const { data, error } = await supabase
-                    .from('mo_chat_messages')
-                    .select('*')
-                    .order('timestamp', { ascending: true });
-                
-                if (error) throw error;
-                
-                // Group messages by visitor (simplified - all visitors in one chat)
-                conversations = {
-                    'visitor_default': {
-                        id: 'visitor_default',
-                        name: 'Website Visitors',
-                        messages: data,
-                        unread: data.some(m => m.sender === 'You' || m.sender === 'Visitor')
+        function initializeApp() {
+            // State
+            let messages = [];
+            
+            // DOM elements
+            const messagesDiv = document.getElementById('messages');
+            const conversationsDiv = document.getElementById('conversations');
+            const messageInput = document.getElementById('messageInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const inputArea = document.getElementById('inputArea');
+            
+            // Load messages
+            async function loadMessages() {
+                try {
+                    console.log('Loading messages from Supabase...');
+                    
+                    const { data, error } = await window.supabase
+                        .from('mo_chat_messages')
+                        .select('*')
+                        .order('timestamp', { ascending: true });
+                    
+                    if (error) {
+                        console.error('Supabase error:', error);
+                        conversationsDiv.innerHTML = '<div class="empty">Error loading</div>';
+                        return;
                     }
-                };
-                
-                updateConversationList();
-                displayMessages();
-                
-                // Show input area if we have messages
-                if (data.length > 0) {
-                    document.getElementById('inputArea').style.display = 'flex';
-                    document.getElementById('messageInput').focus();
+                    
+                    console.log('Loaded', data.length, 'messages');
+                    messages = data;
+                    
+                    // Update UI
+                    updateMessages();
+                    updateConversations();
+                    
+                    // Show input if we have messages
+                    if (data.length > 0) {
+                        inputArea.style.display = 'flex';
+                        messageInput.focus();
+                    }
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+            
+            function updateMessages() {
+                if (messages.length === 0) {
+                    messagesDiv.innerHTML = '<div class="empty">No messages yet</div>';
+                    return;
                 }
                 
-            } catch (error) {
-                console.error('Error loading messages:', error);
-                document.getElementById('conversations').innerHTML = 
-                    '<div class="empty">Error loading conversations</div>';
-            }
-        }
-        
-        // Update conversation list
-        function updateConversationList() {
-            const container = document.getElementById('conversations');
-            const totalChats = Object.keys(conversations).length;
-            const unreadCount = Object.values(conversations).filter(c => c.unread).length;
-            
-            document.getElementById('totalChats').textContent = totalChats;
-            document.getElementById('unreadCount').textContent = unreadCount;
-            
-            container.innerHTML = '';
-            
-            Object.values(conversations).forEach(conv => {
-                const lastMsg = conv.messages[conv.messages.length - 1];
-                const lastTime = lastMsg ? new Date(lastMsg.timestamp).toLocaleTimeString([], { 
-                    hour: '2-digit', minute: '2-digit' 
-                }) : '';
+                messagesDiv.innerHTML = '';
                 
-                const div = document.createElement('div');
-                div.className = `conversation ${currentChat === conv.id ? 'active' : ''}`;
-                div.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <strong>${conv.name}</strong>
-                        ${conv.unread ? '<span style="color: #667eea; font-size: 12px;">●</span>' : ''}
-                    </div>
-                    <div style="font-size: 14px; color: #666; margin: 5px 0;">
-                        ${lastMsg ? (lastMsg.message || 'File shared') : 'No messages'}
-                    </div>
-                    <div style="font-size: 12px; color: #999;">
-                        ${lastMsg ? lastTime : ''}
-                        <span style="float: right;">${conv.messages.length} messages</span>
-                    </div>
-                `;
-                
-                div.onclick = () => {
-                    currentChat = conv.id;
-                    conv.unread = false;
-                    updateConversationList();
-                    displayMessages();
-                };
-                
-                container.appendChild(div);
-            });
-        }
-        
-        // Display messages
-        function displayMessages() {
-            const container = document.getElementById('messages');
-            const conversation = conversations[currentChat];
-            
-            if (!conversation || conversation.messages.length === 0) {
-                container.innerHTML = '<div class="empty">No messages yet</div>';
-                return;
-            }
-            
-            container.innerHTML = '';
-            
-            conversation.messages.forEach(msg => {
-                const isVisitor = msg.sender === 'You' || msg.sender === 'Visitor';
-                const isAdmin = msg.sender === 'Admin' || msg.sender === 'Mo';
-                
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${isVisitor ? 'visitor' : 'admin'}`;
-                
-                const time = new Date(msg.timestamp).toLocaleTimeString([], { 
-                    hour: '2-digit', minute: '2-digit' 
+                messages.forEach(msg => {
+                    const div = document.createElement('div');
+                    div.className = `message ${msg.sender === 'You' || msg.sender === 'Visitor' ? 'visitor' : 'admin'}`;
+                    div.innerHTML = `
+                        <strong>${msg.sender}:</strong> ${msg.message || '(file)'}
+                        <br><small>${new Date(msg.timestamp).toLocaleTimeString()}</small>
+                    `;
+                    messagesDiv.appendChild(div);
                 });
                 
-                let content = msg.message || '';
-                if (msg.file_url) {
-                    content += `<div style="margin-top: 10px;">
-                        <a href="${msg.file_url}" target="_blank" style="color: ${isVisitor ? '#667eea' : 'white'}; text-decoration: underline;">
-                            📎 ${msg.file_name || 'Download file'}
-                        </a>
-                    </div>`;
-                }
+                // Scroll to bottom
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }
+            
+            function updateConversations() {
+                // Simplified: one conversation for all visitors
+                const unreadCount = messages.filter(m => 
+                    (m.sender === 'You' || m.sender === 'Visitor') && !m.read
+                ).length;
                 
-                messageDiv.innerHTML = `
-                    <div class="message-bubble">
-                        <div class="message-sender">
-                            ${isVisitor ? '👤' : '👑'} ${msg.sender}
-                        </div>
-                        <div>${content}</div>
-                        <div class="message-time">${time}</div>
+                conversationsDiv.innerHTML = `
+                    <div style="padding: 10px; background: #f0f0f0; border-radius: 5px;">
+                        <strong>Website Visitors</strong><br>
+                        <small>${messages.length} messages</small>
+                        ${unreadCount > 0 ? `<br><small style="color: #667eea;">${unreadCount} unread</small>` : ''}
                     </div>
                 `;
-                
-                container.appendChild(messageDiv);
-            });
-            
-            // Scroll to bottom
-            container.scrollTop = container.scrollHeight;
-        }
-        
-        // Send message
-        async function sendMessage() {
-            const input = document.getElementById('messageInput');
-            const text = input.value.trim();
-            
-            if (!text) return;
-            
-            // Disable button while sending
-            const btn = document.getElementById('sendBtn');
-            btn.disabled = true;
-            btn.textContent = 'Sending...';
-            
-            try {
-                const { error } = await supabase
-                    .from('mo_chat_messages')
-                    .insert([
-                        { 
-                            sender: 'Admin',
-                            message: text,
-                            room: 'mo_chat',
-                            timestamp: new Date().toISOString()
-                        }
-                    ]);
-                
-                if (error) throw error;
-                
-                input.value = '';
-                
-                // Reload messages to show new one
-                loadMessages();
-                
-            } catch (error) {
-                console.error('Error sending message:', error);
-                alert('Failed to send message. Please try again.');
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Send Message';
-                input.focus();
             }
-        }
-        
-        // Setup real-time updates
-        function setupRealtime() {
-            supabase
-                .channel('mo_chat_messages')
-                .on('INSERT', payload => {
-                    console.log('New message received:', payload.new);
-                    loadMessages(); // Refresh
-                })
-                .subscribe();
-        }
-        
-        // Event listeners
-        function setupEventListeners() {
-            document.getElementById('sendBtn').onclick = sendMessage;
-            document.getElementById('messageInput').onkeypress = (e) => {
+            
+            // Send message
+            async function sendMessage() {
+                const text = messageInput.value.trim();
+                if (!text) return;
+                
+                sendBtn.disabled = true;
+                sendBtn.textContent = 'Sending...';
+                
+                try {
+                    const { error } = await window.supabase
+                        .from('mo_chat_messages')
+                        .insert([
+                            { 
+                                sender: 'Admin',
+                                message: text,
+                                room: 'mo_chat',
+                                timestamp: new Date().toISOString()
+                            }
+                        ]);
+                    
+                    if (error) throw error;
+                    
+                    messageInput.value = '';
+                    loadMessages(); // Reload
+                    
+                } catch (error) {
+                    console.error('Send error:', error);
+                    alert('Failed to send');
+                } finally {
+                    sendBtn.disabled = false;
+                    sendBtn.textContent = 'Send';
+                    messageInput.focus();
+                }
+            }
+            
+            // Setup real-time
+            function setupRealtime() {
+                window.supabase
+                    .channel('mo_chat')
+                    .on('INSERT', payload => {
+                        console.log('New message:', payload.new);
+                        loadMessages();
+                    })
+                    .subscribe();
+            }
+            
+            // Event listeners
+            sendBtn.onclick = sendMessage;
+            messageInput.onkeypress = (e) => {
                 if (e.key === 'Enter') sendMessage();
             };
+            
+            // Initialize
+            loadMessages();
+            setupRealtime();
+            
+            // Auto-refresh
+            setInterval(loadMessages, 10000);
         }
-        
-        // Auto-refresh every 30 seconds
-        setInterval(loadMessages, 30000);
     </script>
 </body>
 </html>
