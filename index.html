@@ -596,10 +596,14 @@
       
       if (error) throw error;
       
-      // Clear current messages (except welcome message)
-      document.querySelectorAll('.message-incoming, .message-outgoing, .message-system').forEach(el => {
-        if (!el.innerText.includes('Welcome')) el.remove();
-      });
+      // Clear current messages (except the first welcome message)
+      const chatMessagesDiv = document.getElementById('chat-messages');
+      const children = chatMessagesDiv.children;
+      
+      // Keep only the first child (welcome message)
+      while (children.length > 1) {
+        chatMessagesDiv.removeChild(children[1]);
+      }
       
       // Add each message to chat
       messages.forEach(msg => {
