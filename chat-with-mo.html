@@ -276,7 +276,7 @@
     </script>
     
     <script>
-        // Mo's Chat Functionality - FIXED VERSION
+        // Mo's Chat Functionality - FIXED REAL-TIME VERSION
         document.addEventListener('DOMContentLoaded', function() {
             // DOM Elements
             const chatInput = document.getElementById('chat-input');
@@ -500,6 +500,8 @@
             // Load chat history
             async function loadChatHistory() {
                 try {
+                    console.log('Loading chat history...');
+                    
                     const { data: messages, error } = await window.supabaseClient
                         .from('mo_chat_messages')
                         .select('*')
@@ -508,6 +510,8 @@
                         .limit(50);
                     
                     if (error) throw error;
+                    
+                    console.log(`Loaded ${messages.length} messages from database`);
                     
                     // Clear except welcome message
                     const children = chatMessages.children;
@@ -519,9 +523,7 @@
                     messages.forEach(msg => {
                         const isUser = msg.sender === 'You' || msg.sender === 'Visitor';
                         
-                        // Determine if it's an auto-reply or manual admin reply
-                        // Auto-replies have simple acknowledgment messages
-                        // Admin replies are more specific responses
+                        // Determine if it's an auto-reply
                         let isMoResponse = false;
                         const autoReplyPatterns = [
                             "Thanks for your message!",
@@ -552,7 +554,6 @@
                         }
                     });
                     
-                    console.log('Loaded', messages.length, 'Mo chat messages');
                     updateChatStatus('active', `🟢 ${messages.length} messages loaded`);
                     
                 } catch (error) {
@@ -742,48 +743,73 @@
                 }
             }
             
-            // Real-time subscription for new messages
-            const channel = window.supabaseClient
-                .channel('mo_chat_realtime')
-                .on('INSERT', payload => {
-                    console.log('New message via real-time:', payload.new);
-                    
-                    const newMsg = payload.new;
-                    const isUser = newMsg.sender === 'You' || newMsg.sender === 'Visitor';
-                    
-                    // Determine if it's an auto-reply
-                    let isMoResponse = false;
-                    const autoReplyPatterns = [
-                        "Thanks for your message!",
-                        "Message received.",
-                        "Got it! I'm currently away",
-                        "I'll respond when",
-                        "I typically respond within"
-                    ];
-                    
-                    if (newMsg.sender === 'Mo' && newMsg.message) {
-                        isMoResponse = autoReplyPatterns.some(pattern => 
-                            newMsg.message.includes(pattern)
-                        );
-                    }
-                    
-                    if (newMsg.file_url) {
-                        const fileInfo = {
-                            name: newMsg.file_name || 'File',
-                            size: newMsg.file_size || 0,
-                            type: newMsg.file_type || 'FILE',
-                            url: newMsg.file_url
-                        };
-                        addMessage(newMsg.sender, null, fileInfo, isUser, isMoResponse);
-                    }
-                    
-                    if (newMsg.message) {
-                        addMessage(newMsg.sender, newMsg.message, null, isUser, isMoResponse);
-                    }
-                })
-                .subscribe();
+            // REAL-TIME SUBSCRIPTION - FIXED VERSION
+            console.log('Setting up real-time subscription...');
             
-            console.log('Mo Chat (Fixed) initialized');
+            const channel = window.supabaseClient
+                .channel('mo_chat_messages_updates')
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'mo_chat_messages',
+                        filter: 'room=eq.mo_chat'
+                    },
+                    (payload) => {
+                        console.log('Real-time INSERT detected:', payload.new);
+                        
+                        const newMsg = payload.new;
+                        const isUser = newMsg.sender === 'You' || newMsg.sender === 'Visitor';
+                        
+                        // Determine if it's an auto-reply
+                        let isMoResponse = false;
+                        const autoReplyPatterns = [
+                            "Thanks for your message!",
+                            "Message received.",
+                            "Got it! I'm currently away",
+                            "I'll respond when",
+                            "I typically respond within"
+                        ];
+                        
+                        if (newMsg.sender === 'Mo' && newMsg.message) {
+                            isMoResponse = autoReplyPatterns.some(pattern => 
+                                newMsg.message.includes(pattern)
+                            );
+                        }
+                        
+                        // Add the message to UI
+                        if (newMsg.file_url) {
+                            const fileInfo = {
+                                name: newMsg.file_name || 'File',
+                                size: newMsg.file_size || 0,
+                                type: newMsg.file_type || 'FILE',
+                                url: newMsg.file_url
+                            };
+                            addMessage(newMsg.sender, null, fileInfo, isUser, isMoResponse);
+                        }
+                        
+                        if (newMsg.message) {
+                            addMessage(newMsg.sender, newMsg.message, null, isUser, isMoResponse);
+                        }
+                    }
+                )
+                .subscribe((status) => {
+                    console.log('Real-time subscription status:', status);
+                    
+                    if (status === 'SUBSCRIBED') {
+                        console.log('✅ Successfully subscribed to real-time updates');
+                        updateChatStatus('active', '🟢 Real-time connected');
+                    } else if (status === 'CHANNEL_ERROR') {
+                        console.error('❌ Real-time subscription error');
+                        updateChatStatus('error', '🔴 Real-time failed');
+                    }
+                });
+            
+            // Auto-refresh every 30 seconds (fallback)
+            setInterval(loadChatHistory, 30000);
+            
+            console.log('Mo Chat (Fixed Real-time) initialized');
         });
     </script>
 </body>
