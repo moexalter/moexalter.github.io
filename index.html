@@ -584,6 +584,49 @@
 
 <script>
 // Enhanced chat with file upload
+
+  // Load previous messages from database
+  async function loadChatHistory() {
+    try {
+      const { data: messages, error } = await window.supabaseClient
+        .from('chat_messages')
+        .select('*')
+        .order('timestamp', { ascending: true })
+        .limit(50);
+      
+      if (error) throw error;
+      
+      // Clear current messages (except welcome message)
+      document.querySelectorAll('.message-incoming, .message-outgoing, .message-system').forEach(el => {
+        if (!el.innerText.includes('Welcome')) el.remove();
+      });
+      
+      // Add each message to chat
+      messages.forEach(msg => {
+        const isUser = msg.sender === 'Visitor' || msg.sender === 'You';
+        
+        if (msg.file_url) {
+          // File message
+          const fileInfo = {
+            name: msg.file_name || 'File',
+            size: msg.file_size || 0,
+            type: msg.file_type || 'FILE'
+          };
+          addMessage(msg.sender, null, fileInfo, isUser);
+        }
+        
+        if (msg.message) {
+          // Text message
+          addMessage(msg.sender, msg.message, null, isUser);
+        }
+      });
+      
+      console.log('Loaded', messages.length, 'previous messages');
+      
+    } catch (error) {
+      console.error('Failed to load chat history:', error);
+    }
+  }
 document.addEventListener('DOMContentLoaded', function() {
   // DOM Elements
   const chatToggle = document.getElementById('chat-toggle');
@@ -608,6 +651,11 @@ document.addEventListener('DOMContentLoaded', function() {
   chatToggle.addEventListener('click', function() {
     isChatOpen = !isChatOpen;
     chatWindow.style.display = isChatOpen ? 'flex' : 'none';
+    
+    // Load previous messages when opening chat
+    if (isChatOpen) {
+      loadChatHistory();
+    }
   });
   
   // Close chat
