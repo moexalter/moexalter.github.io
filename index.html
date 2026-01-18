@@ -495,19 +495,19 @@
 
 
 
-<!-- ======= Live Chat Widget ======= -->
+<!-- ======= Live Chat Widget with File Upload ======= -->
 <div id="chat-widget" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
   <button id="chat-toggle" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 24px; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
     💬
   </button>
   
-  <div id="chat-window" style="display: none; width: 350px; height: 500px; background: white; border-radius: 15px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); margin-bottom: 15px; overflow: hidden; flex-direction: column;">
+  <div id="chat-window" style="display: none; width: 380px; height: 550px; background: white; border-radius: 15px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); margin-bottom: 15px; overflow: hidden; flex-direction: column;">
     
     <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px;">
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <div>
           <h3 style="margin: 0; font-size: 18px;">Live Chat</h3>
-          <p style="margin: 5px 0 0; font-size: 12px; opacity: 0.9;">Online • Real-time</p>
+          <p style="margin: 5px 0 0; font-size: 12px; opacity: 0.9;">Send messages, photos & files</p>
         </div>
         <button id="chat-close" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">
           ×
@@ -518,36 +518,78 @@
     <div id="chat-messages" style="flex: 1; padding: 20px; overflow-y: auto; background: #f8f9fa;">
       <div style="text-align: center; margin: 20px 0;">
         <span style="background: #e9ecef; padding: 5px 15px; border-radius: 15px; font-size: 12px; color: #666;">
-          Welcome! Type a message to start chatting.
+          Chat supports text, images, PDF, and documents
         </span>
       </div>
     </div>
     
+    <!-- File Upload Preview -->
+    <div id="file-preview" style="display: none; padding: 10px 20px; background: #f0f7ff; border-top: 1px solid #d0e0ff;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div id="file-icon" style="font-size: 24px;">📎</div>
+          <div>
+            <div id="file-name" style="font-weight: 600; font-size: 14px;"></div>
+            <div id="file-size" style="font-size: 12px; color: #666;"></div>
+          </div>
+        </div>
+        <button id="remove-file" style="background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 18px;">
+          ×
+        </button>
+      </div>
+    </div>
+    
+    <!-- Chat Input Area -->
     <div style="border-top: 1px solid #e0e0e0; padding: 15px; background: white;">
-      <div style="display: flex; gap: 10px;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+        <!-- File Upload Button -->
+        <label for="file-upload" style="cursor: pointer; background: #f8f9fa; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px dashed #c0c0c0;">
+          <span style="font-size: 18px;">📎</span>
+          <input type="file" id="file-upload" accept="image/*,.pdf,.doc,.docx,.txt" style="display: none;">
+        </label>
+        
+        <!-- Text Input -->
         <input type="text" id="chat-input" placeholder="Type your message..." style="flex: 1; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 25px; font-size: 14px;">
+        
+        <!-- Send Button -->
         <button id="chat-send" style="background: #667eea; color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 18px;">
           →
         </button>
       </div>
-      <p style="font-size: 11px; color: #999; text-align: center; margin: 10px 0 0;">
-        Press Enter to send
-      </p>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-size: 11px; color: #999;">
+          <span>Max file size: 5MB</span>
+          <span style="margin-left: 15px;">Formats: Images, PDF, DOC, TXT</span>
+        </div>
+        <div id="typing-indicator" style="font-size: 12px; color: #667eea; display: none;">
+          Support is typing...
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-// Simple chat functionality
+// Enhanced chat with file upload
 document.addEventListener('DOMContentLoaded', function() {
+  // DOM Elements
   const chatToggle = document.getElementById('chat-toggle');
   const chatWindow = document.getElementById('chat-window');
   const chatClose = document.getElementById('chat-close');
   const chatInput = document.getElementById('chat-input');
   const chatSend = document.getElementById('chat-send');
   const chatMessages = document.getElementById('chat-messages');
+  const fileUpload = document.getElementById('file-upload');
+  const filePreview = document.getElementById('file-preview');
+  const fileName = document.getElementById('file-name');
+  const fileSize = document.getElementById('file-size');
+  const fileIcon = document.getElementById('file-icon');
+  const removeFile = document.getElementById('remove-file');
+  const typingIndicator = document.getElementById('typing-indicator');
   
   let isChatOpen = false;
+  let selectedFile = null;
   let messageCount = 0;
   
   // Toggle chat window
@@ -562,53 +604,149 @@ document.addEventListener('DOMContentLoaded', function() {
     chatWindow.style.display = 'none';
   });
   
-  // Send message
+  // File upload handler
+  fileUpload.addEventListener('change', function(e) {
+    if (e.target.files.length > 0) {
+      selectedFile = e.target.files[0];
+      
+      // Check file size (5MB limit)
+      if (selectedFile.size > 5 * 1024 * 1024) {
+        alert('File too large! Max 5MB allowed.');
+        selectedFile = null;
+        fileUpload.value = '';
+        return;
+      }
+      
+      // Show file preview
+      fileName.textContent = selectedFile.name;
+      fileSize.textContent = formatFileSize(selectedFile.size);
+      
+      // Set icon based on file type
+      const icon = getFileIcon(selectedFile.type, selectedFile.name);
+      fileIcon.textContent = icon;
+      
+      filePreview.style.display = 'block';
+    }
+  });
+  
+  // Remove selected file
+  removeFile.addEventListener('click', function() {
+    selectedFile = null;
+    fileUpload.value = '';
+    filePreview.style.display = 'none';
+  });
+  
+  // Send message on button click
   chatSend.addEventListener('click', sendMessage);
   
   // Send on Enter key
   chatInput.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
       sendMessage();
     }
   });
   
-  function sendMessage() {
-    const message = chatInput.value.trim();
-    if (!message) return;
+  // Send message function
+  async function sendMessage() {
+    const textMessage = chatInput.value.trim();
     
-    // Add user message
-    addMessage('You', message, true);
+    // If no message and no file, do nothing
+    if (!textMessage && !selectedFile) return;
+    
+    // Show typing indicator
+    typingIndicator.style.display = 'block';
+    
+    // Add user message to UI immediately
+    if (textMessage) {
+      addMessage('You', textMessage, null, true);
+    }
+    
+    if (selectedFile) {
+      // Show file in chat
+      addFileMessage(selectedFile, true);
+    }
+    
+    // Clear inputs
     chatInput.value = '';
+    if (selectedFile) {
+      selectedFile = null;
+      fileUpload.value = '';
+      filePreview.style.display = 'none';
+    }
+    
     messageCount++;
     
-    // Auto-reply after 1 second
+    // Simulate file upload and bot response
     setTimeout(function() {
-      const replies = [
-        "Thanks for your message! How can I help you?",
-        "I'll get back to you shortly.",
-        "That's interesting! Tell me more.",
-        "Thanks for reaching out!",
-        "I'm here to help. What do you need?"
-      ];
-      const reply = replies[Math.floor(Math.random() * replies.length)];
-      addMessage('Support Bot', reply, false);
-    }, 1000);
+      typingIndicator.style.display = 'none';
+      
+      // Bot responses
+      if (selectedFile) {
+        const fileResponses = [
+          "Thanks for sharing the file! I've received it.",
+          "File received successfully. I'll review it.",
+          "Got your document! Thanks for uploading."
+        ];
+        const reply = fileResponses[Math.floor(Math.random() * fileResponses.length)];
+        addMessage('Support Bot', reply, null, false);
+      } else if (textMessage) {
+        const textResponses = [
+          "Thanks for your message! How can I help?",
+          "I understand. Let me know if you need more details.",
+          "Got it! Is there anything specific you need help with?"
+        ];
+        const reply = textResponses[Math.floor(Math.random() * textResponses.length)];
+        addMessage('Support Bot', reply, null, false);
+      }
+    }, 1500);
   }
   
-  function addMessage(sender, text, isUser) {
+  // Helper: Format file size
+  function formatFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' bytes';
+    else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    else return (bytes / 1048576).toFixed(1) + ' MB';
+  }
+  
+  // Helper: Get file icon
+  function getFileIcon(fileType, fileName) {
+    if (fileType.startsWith('image/')) return '🖼️';
+    if (fileType.includes('pdf')) return '📄';
+    if (fileType.includes('document') || fileName.match(/\.(doc|docx)$/i)) return '📝';
+    if (fileType.includes('text') || fileName.match(/\.txt$/i)) return '📄';
+    return '📎';
+  }
+  
+  // Add text message to UI
+  function addMessage(sender, text, fileInfo = null, isUser = true) {
     const messageDiv = document.createElement('div');
     const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    let content = '';
+    if (fileInfo) {
+      content = `
+        <div style="background: ${isUser ? '#e3f2fd' : '#f5f5f5'}; padding: 10px; border-radius: 10px; margin: 5px 0;">
+          <div style="font-weight: 600; margin-bottom: 5px;">📎 ${fileInfo.name}</div>
+          <div style="font-size: 12px; color: #666;">${formatFileSize(fileInfo.size)} • ${fileInfo.type}</div>
+        </div>
+      `;
+    }
+    
+    if (text) {
+      content += `<div style="margin: 5px 0;">${text}</div>`;
+    }
     
     messageDiv.innerHTML = `
       <div style="margin-bottom: 15px; display: flex; ${isUser ? 'justify-content: flex-end;' : ''}">
         <div style="max-width: 80%; background: ${isUser ? '#667eea' : 'white'}; 
                     color: ${isUser ? 'white' : '#333'}; 
-                    padding: 10px 15px; border-radius: 18px; 
+                    padding: 12px 15px; border-radius: 18px; 
                     border: ${!isUser ? '1px solid #e0e0e0' : 'none'};
-                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
           <div style="font-weight: 600; font-size: 12px; margin-bottom: 3px;">${sender}</div>
-          <div style="font-size: 14px;">${text}</div>
-          <div style="font-size: 10px; opacity: 0.7; text-align: right; margin-top: 5px;">${time}</div>
+          ${content}
+          <div style="font-size: 10px; opacity: 0.7; text-align: right; margin-top: 8px;">${time}</div>
         </div>
       </div>
     `;
@@ -617,16 +755,79 @@ document.addEventListener('DOMContentLoaded', function() {
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
   
+  // Add file message to UI
+  function addFileMessage(file, isUser = true) {
+    const fileInfo = {
+      name: file.name,
+      size: file.size,
+      type: file.type.split('/')[1]?.toUpperCase() || 'FILE'
+    };
+    
+    addMessage(isUser ? 'You' : 'Support Bot', null, fileInfo, isUser);
+  }
+  
   // Auto welcome message
   setTimeout(function() {
     if (messageCount === 0) {
-      addMessage('Support Bot', 'Hello! 👋 Need any help with the website?', false);
+      addMessage('Support Bot', 'Hello! 👋 You can send messages, photos, and files here.', null, false);
     }
-  }, 3000);
+  }, 2000);
+  
+  // Simulate bot typing occasionally
+  setInterval(function() {
+    if (isChatOpen && messageCount > 0 && Math.random() > 0.7) {
+      typingIndicator.style.display = 'block';
+      setTimeout(() => {
+        typingIndicator.style.display = 'none';
+      }, 1500);
+    }
+  }, 10000);
 });
 </script>
-<!-- ======= End Live Chat Widget ======= -->
 
+<style>
+/* Chat animations */
+#chat-window {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+#chat-toggle {
+  transition: transform 0.3s ease;
+}
+
+#chat-toggle:hover {
+  transform: scale(1.1) rotate(5deg);
+}
+
+#file-preview {
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Scrollbar */
+#chat-messages::-webkit-scrollbar {
+  width: 8px;
+}
+
+#chat-messages::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+#chat-messages::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+#chat-messages::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+</style>
+<!-- ======= End Enhanced Chat Widget ======= -->
 <!-- ======= Expert Trading Recommendations ======= -->
 <section style="background: #fff; padding: 80px 0; border-top: 1px solid #eee;">
   <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
