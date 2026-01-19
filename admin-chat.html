@@ -5,6 +5,108 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Mo's Chat</title>
     <style>
+        /* Login Screen */
+        .login-screen {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 24px;
+            padding: 50px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        
+        .login-logo {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        
+        .login-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        
+        .login-subtitle {
+            color: #6b7280;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+        
+        .login-input {
+            width: 100%;
+            padding: 18px 24px;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .login-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .login-input.error {
+            border-color: #ef4444;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .error-message {
+            color: #ef4444;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .hint {
+            color: #9ca3af;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+        
+        /* Hide admin content initially */
+        .admin-content {
+            display: none;
+        }
+        
+        /* Rest of the admin styles from previous beautiful version */
         * {
             margin: 0;
             padding: 0;
@@ -18,7 +120,6 @@
             color: #333;
         }
         
-        /* Admin Container */
         .admin-container {
             display: flex;
             height: 100vh;
@@ -413,194 +514,133 @@
             margin-bottom: 24px;
         }
         
-        /* Typing Indicator */
-        .typing-indicator {
-            display: inline-flex;
-            gap: 6px;
-            padding: 12px 18px;
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 18px;
-            margin-bottom: 20px;
-            align-self: flex-start;
+        /* Logout Button */
+        .logout-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
-        .typing-dot {
-            width: 8px;
-            height: 8px;
-            background: #667eea;
-            border-radius: 50%;
-            animation: typing 1.4s infinite;
-        }
-        
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-        
-        @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-6px); }
-        }
-        
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .admin-container {
-                flex-direction: column;
-            }
-            
-            .sidebar {
-                width: 100%;
-                height: 300px;
-            }
-            
-            .conversations-list {
-                display: flex;
-                overflow-x: auto;
-                padding-bottom: 15px;
-            }
-            
-            .conversation-item {
-                min-width: 280px;
-                margin-right: 12px;
-                margin-bottom: 0;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .sidebar-header {
-                padding: 20px;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-                padding: 15px;
-            }
-            
-            .chat-header {
-                padding: 20px;
-                flex-direction: column;
-                gap: 15px;
-                align-items: flex-start;
-            }
-            
-            .chat-actions {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            .input-area {
-                padding: 20px;
-            }
-            
-            .input-wrapper {
-                flex-direction: column;
-            }
-            
-            #sendBtn {
-                width: 100%;
-            }
-        }
-        
-        /* Scrollbar */
-        .conversations-list::-webkit-scrollbar,
-        .messages-area::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        .conversations-list::-webkit-scrollbar-track,
-        .messages-area::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 4px;
-        }
-        
-        .conversations-list::-webkit-scrollbar-thumb,
-        .messages-area::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-        
-        .conversations-list::-webkit-scrollbar-thumb:hover,
-        .messages-area::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+        .logout-btn:hover {
+            background: #dc2626;
         }
     </style>
 </head>
 <body>
-    <div class="admin-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <div class="admin-profile">
-                    <div class="admin-avatar">👑</div>
-                    <div class="admin-info">
-                        <h2>Mo's Admin</h2>
-                        <p>Chat Dashboard</p>
-                    </div>
-                </div>
-            </div>
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-container">
+            <div class="login-logo">🔒</div>
+            <h1 class="login-title">Admin Access</h1>
+            <p class="login-subtitle">Enter password to access the chat dashboard</p>
             
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number" id="totalChats">0</div>
-                    <div class="stat-label">Total Chats</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="unreadCount">0</div>
-                    <div class="stat-label">Unread</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="todayMessages">0</div>
-                    <div class="stat-label">Today</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="responseRate">0%</div>
-                    <div class="stat-label">Response Rate</div>
-                </div>
-            </div>
+            <input type="password" class="login-input" id="passwordInput" placeholder="Enter admin password" autocomplete="off" autofocus>
+            <div class="error-message" id="errorMessage">Incorrect password. Please try again.</div>
             
-            <div class="conversations-header">Active Conversations</div>
-            <div class="conversations-list" id="conversationsList">
-                <!-- Conversations will be loaded here -->
+            <button class="login-btn" id="loginBtn" onclick="checkPassword()">Login</button>
+            
+            <div class="hint">
+                Default password: <strong>admin123</strong><br>
+                Change this in the JavaScript code
             </div>
         </div>
+    </div>
+    
+    <!-- Admin Content (hidden until login) -->
+    <div class="admin-content" id="adminContent">
+        <button class="logout-btn" onclick="logout()">
+            <span>🚪</span>
+            <span>Logout</span>
+        </button>
         
-        <!-- Main Chat Area -->
-        <div class="chat-area">
-            <div class="chat-header">
-                <div class="chat-info">
-                    <h3 id="currentChatName">Select a conversation</h3>
-                    <div class="chat-status">
-                        <div class="status-dot"></div>
-                        <span id="chatStatusText">Ready to chat</span>
+        <div class="admin-container">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <div class="admin-profile">
+                        <div class="admin-avatar">👑</div>
+                        <div class="admin-info">
+                            <h2>Mo's Admin</h2>
+                            <p>Secure Chat Dashboard</p>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="chat-actions">
-                    <button class="action-btn" onclick="refreshChat()">
-                        <span>🔄</span>
-                        <span>Refresh</span>
-                    </button>
-                    <button class="action-btn primary" onclick="markAllRead()">
-                        <span>✓</span>
-                        <span>Mark All Read</span>
-                    </button>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalChats">0</div>
+                        <div class="stat-label">Total Chats</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="unreadCount">0</div>
+                        <div class="stat-label">Unread</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="todayMessages">0</div>
+                        <div class="stat-label">Today</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="responseRate">0%</div>
+                        <div class="stat-label">Response Rate</div>
+                    </div>
+                </div>
+                
+                <div class="conversations-header">Active Conversations</div>
+                <div class="conversations-list" id="conversationsList">
+                    <!-- Conversations will be loaded here -->
                 </div>
             </div>
             
-            <div class="messages-area" id="messagesArea">
-                <div class="empty-state" id="emptyState">
-                    <div class="empty-icon">💬</div>
-                    <h3>No conversation selected</h3>
-                    <p>Select a conversation from the sidebar to start chatting with visitors</p>
+            <!-- Main Chat Area -->
+            <div class="chat-area">
+                <div class="chat-header">
+                    <div class="chat-info">
+                        <h3 id="currentChatName">Select a conversation</h3>
+                        <div class="chat-status">
+                            <div class="status-dot"></div>
+                            <span id="chatStatusText">Ready to chat</span>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-actions">
+                        <button class="action-btn" onclick="refreshChat()">
+                            <span>🔄</span>
+                            <span>Refresh</span>
+                        </button>
+                        <button class="action-btn primary" onclick="markAllRead()">
+                            <span>✓</span>
+                            <span>Mark All Read</span>
+                        </button>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="input-area" id="inputArea" style="display: none;">
-                <div class="input-wrapper">
-                    <input type="text" id="messageInput" placeholder="Type your reply here..." autocomplete="off">
-                    <button id="sendBtn">
-                        <span>Send</span>
-                        <span>➤</span>
-                    </button>
+                
+                <div class="messages-area" id="messagesArea">
+                    <div class="empty-state" id="emptyState">
+                        <div class="empty-icon">💬</div>
+                        <h3>No conversation selected</h3>
+                        <p>Select a conversation from the sidebar to start chatting with visitors</p>
+                    </div>
+                </div>
+                
+                <div class="input-area" id="inputArea" style="display: none;">
+                    <div class="input-wrapper">
+                        <input type="text" id="messageInput" placeholder="Type your reply here..." autocomplete="off">
+                        <button id="sendBtn">
+                            <span>Send</span>
+                            <span>➤</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -608,34 +648,101 @@
 
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
-        // Initialize Supabase
-        const supabaseUrl = 'https://eecvxrcagzksvaboageo.supabase.co';
-        const supabaseKey = 'sb_publishable_yVh969gWeMM--mYCEXpQkg_AUIEufDj';
-        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+        // ========== PASSWORD CONFIGURATION ==========
+        // CHANGE THIS PASSWORD FOR PRODUCTION!
+        const ADMIN_PASSWORD = 'admin123'; // Change this to your preferred password
         
-        console.log('Beautiful Admin Dashboard initialized');
+        // Password check function
+        function checkPassword() {
+            const passwordInput = document.getElementById('passwordInput');
+            const errorMessage = document.getElementById('errorMessage');
+            const loginBtn = document.getElementById('loginBtn');
+            const password = passwordInput.value.trim();
+            
+            if (!password) {
+                passwordInput.classList.add('error');
+                errorMessage.textContent = 'Please enter a password';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            
+            // Disable button during check
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Checking...';
+            
+            // Simulate network delay
+            setTimeout(() => {
+                if (password === ADMIN_PASSWORD) {
+                    // Successful login
+                    document.getElementById('loginScreen').style.display = 'none';
+                    document.getElementById('adminContent').style.display = 'block';
+                    
+                    // Initialize the chat dashboard
+                    initializeChatDashboard();
+                    
+                    // Store login state in sessionStorage
+                    sessionStorage.setItem('adminLoggedIn', 'true');
+                } else {
+                    // Failed login
+                    passwordInput.classList.add('error');
+                    errorMessage.style.display = 'block';
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                }
+                
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Login';
+            }, 800);
+        }
         
-        // State
+        // Check if already logged in from sessionStorage
+        function checkExistingLogin() {
+            if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('adminContent').style.display = 'block';
+                initializeChatDashboard();
+            }
+        }
+        
+        // Logout function
+        function logout() {
+            sessionStorage.removeItem('adminLoggedIn');
+            location.reload();
+        }
+        
+        // Handle Enter key in password field
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+        
+        // ========== CHAT DASHBOARD FUNCTIONS ==========
+        let supabaseClient = null;
         let allMessages = [];
         let currentConversation = 'visitor_default';
         
-        // DOM Elements
-        const conversationsList = document.getElementById('conversationsList');
-        const messagesArea = document.getElementById('messagesArea');
-        const messageInput = document.getElementById('messageInput');
-        const sendBtn = document.getElementById('sendBtn');
-        const inputArea = document.getElementById('inputArea');
-        const emptyState = document.getElementById('emptyState');
-        const currentChatName = document.getElementById('currentChatName');
-        const chatStatusText = document.getElementById('chatStatusText');
-        
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
+        // Initialize chat dashboard
+        function initializeChatDashboard() {
+            console.log('Initializing secure chat dashboard...');
+            
+            // Initialize Supabase
+            const supabaseUrl = 'https://eecvxrcagzksvaboageo.supabase.co';
+            const supabaseKey = 'sb_publishable_yVh969gWeMM--mYCEXpQkg_AUIEufDj';
+            supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+            
+            // Load messages
             loadMessages();
             setupEventListeners();
             setupRealtime();
             updateStats();
-        });
+            
+            // Focus message input
+            setTimeout(() => {
+                const messageInput = document.getElementById('messageInput');
+                if (messageInput) messageInput.focus();
+            }, 500);
+        }
         
         // Load messages
         async function loadMessages() {
@@ -659,21 +766,22 @@
                 // If we have messages, show the chat
                 if (data.length > 0) {
                     displayMessages();
-                    inputArea.style.display = 'block';
-                    emptyState.style.display = 'none';
-                    messageInput.focus();
+                    document.getElementById('inputArea').style.display = 'block';
+                    document.getElementById('emptyState').style.display = 'none';
                 }
                 
             } catch (error) {
                 console.error('Error loading messages:', error);
-                conversationsList.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><p>Failed to load conversations</p></div>';
+                document.getElementById('conversationsList').innerHTML = 
+                    '<div class="empty-state"><div class="empty-icon">⚠️</div><p>Failed to load conversations</p></div>';
             }
         }
         
         // Update conversations list
         function updateConversationsList() {
             if (allMessages.length === 0) {
-                conversationsList.innerHTML = '<div class="empty-state"><p>No conversations yet</p></div>';
+                document.getElementById('conversationsList').innerHTML = 
+                    '<div class="empty-state"><p>No conversations yet</p></div>';
                 return;
             }
             
@@ -685,7 +793,7 @@
             const lastMessage = allMessages[allMessages.length - 1];
             const lastTime = lastMessage ? formatRelativeTime(new Date(lastMessage.timestamp)) : '';
             
-            conversationsList.innerHTML = `
+            document.getElementById('conversationsList').innerHTML = `
                 <div class="conversation-item ${currentConversation === 'visitor_default' ? 'active' : ''}" 
                      onclick="selectConversation('visitor_default')">
                     <div class="conversation-name">
@@ -706,10 +814,12 @@
         // Display messages
         function displayMessages() {
             if (allMessages.length === 0) {
-                messagesArea.innerHTML = '<div class="empty-state"><div class="empty-icon">💬</div><p>No messages yet</p></div>';
+                document.getElementById('messagesArea').innerHTML = 
+                    '<div class="empty-state"><div class="empty-icon">💬</div><p>No messages yet</p></div>';
                 return;
             }
             
+            const messagesArea = document.getElementById('messagesArea');
             messagesArea.innerHTML = '';
             
             allMessages.forEach(msg => {
@@ -742,7 +852,10 @@
         
         // Send message
         async function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const sendBtn = document.getElementById('sendBtn');
             const text = messageInput.value.trim();
+            
             if (!text) {
                 messageInput.focus();
                 return;
@@ -785,11 +898,11 @@
         // Select conversation
         function selectConversation(conversationId) {
             currentConversation = conversationId;
-            currentChatName.textContent = 'Website Visitors';
-            chatStatusText.textContent = 'Active now';
+            document.getElementById('currentChatName').textContent = 'Website Visitors';
+            document.getElementById('chatStatusText').textContent = 'Active now';
             updateConversationsList();
             displayMessages();
-            messageInput.focus();
+            document.getElementById('messageInput').focus();
         }
         
         // Setup real-time
@@ -827,19 +940,17 @@
         
         // Update statistics
         function updateStats() {
-            const totalChats = 1; // Only one conversation for now
+            const totalChats = 1;
             const visitorMessages = allMessages.filter(m => 
                 m.sender === 'You' || m.sender === 'Visitor'
             ).length;
             
-            // Count today's messages
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             const todayMessages = allMessages.filter(m => 
                 new Date(m.timestamp) >= today
             ).length;
             
-            // Calculate response rate (admin responses / visitor messages)
             const adminResponses = allMessages.filter(m => m.sender === 'Mo').length;
             const responseRate = visitorMessages > 0 ? 
                 Math.round((adminResponses / visitorMessages) * 100) : 0;
@@ -915,9 +1026,9 @@
         
         // Setup event listeners
         function setupEventListeners() {
-            sendBtn.addEventListener('click', sendMessage);
+            document.getElementById('sendBtn').addEventListener('click', sendMessage);
             
-            messageInput.addEventListener('keypress', (e) => {
+            document.getElementById('messageInput').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     sendMessage();
@@ -925,13 +1036,22 @@
             });
         }
         
-        // Auto-refresh every 30 seconds
-        setInterval(loadMessages, 30000);
-        
         // Make functions available globally
         window.selectConversation = selectConversation;
         window.refreshChat = refreshChat;
         window.markAllRead = markAllRead;
+        window.logout = logout;
+        window.checkPassword = checkPassword;
+        
+        // Check existing login on page load
+        document.addEventListener('DOMContentLoaded', checkExistingLogin);
+        
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+                loadMessages();
+            }
+        }, 30000);
     </script>
 </body>
 </html>
