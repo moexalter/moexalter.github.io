@@ -1,24 +1,427 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Chat with Mo - Fixed</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Mo</title>
     <style>
-        body { font-family: Arial; padding: 20px; }
-        .messages { height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
-        .user { background: #e3f2fd; padding: 5px; margin: 5px; border-radius: 5px; }
-        .admin { background: #f5f5f5; padding: 5px; margin: 5px; border-radius: 5px; text-align: right; }
-        input { width: 80%; padding: 10px; }
-        button { padding: 10px 20px; background: #667eea; color: white; border: none; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .chat-container {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            height: 85vh;
+        }
+        
+        /* Header */
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .chat-header::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 2px;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .avatar {
+            width: 70px;
+            height: 70px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            backdrop-filter: blur(10px);
+            border: 3px solid rgba(255,255,255,0.3);
+        }
+        
+        .header-text h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header-text p {
+            opacity: 0.9;
+            font-size: 16px;
+            font-weight: 400;
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Messages Area */
+        .messages-container {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .message {
+            max-width: 75%;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message.user {
+            align-self: flex-end;
+        }
+        
+        .message.admin {
+            align-self: flex-start;
+        }
+        
+        .message-bubble {
+            padding: 18px 22px;
+            border-radius: 22px;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            line-height: 1.5;
+            font-size: 16px;
+        }
+        
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 8px;
+        }
+        
+        .message.admin .message-bubble {
+            background: white;
+            color: #1f2937;
+            border: 1px solid #e5e7eb;
+            border-bottom-left-radius: 8px;
+        }
+        
+        .message-sender {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .message-time {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 10px;
+            text-align: right;
+        }
+        
+        .message.admin .message-time {
+            color: #6b7280;
+        }
+        
+        .message.user .message-time {
+            color: rgba(255,255,255,0.8);
+        }
+        
+        /* Input Area */
+        .input-container {
+            padding: 25px 30px;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .input-wrapper {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        #chatInput {
+            flex: 1;
+            padding: 18px 24px;
+            border: 2px solid #e5e7eb;
+            border-radius: 18px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s;
+            background: #f9fafb;
+        }
+        
+        #chatInput:focus {
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        #chatInput::placeholder {
+            color: #9ca3af;
+        }
+        
+        #sendBtn {
+            padding: 18px 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 18px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        #sendBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        #sendBtn:active {
+            transform: translateY(0);
+        }
+        
+        #sendBtn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* File Upload */
+        .file-upload {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .file-label {
+            padding: 12px 20px;
+            background: #f3f4f6;
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            color: #6b7280;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            flex: 1;
+        }
+        
+        .file-label:hover {
+            background: #e5e7eb;
+            border-color: #9ca3af;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        /* Welcome Message */
+        .welcome-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+        }
+        
+        .welcome-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+        
+        .welcome-message h3 {
+            font-size: 24px;
+            color: #374151;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-message p {
+            font-size: 16px;
+            max-width: 400px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .chat-container {
+                height: 90vh;
+                border-radius: 20px;
+            }
+            
+            .chat-header {
+                padding: 20px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .avatar {
+                width: 60px;
+                height: 60px;
+                font-size: 28px;
+            }
+            
+            .header-text h1 {
+                font-size: 28px;
+            }
+            
+            .messages-container {
+                padding: 20px;
+            }
+            
+            .input-container {
+                padding: 20px;
+            }
+            
+            .input-wrapper {
+                flex-direction: column;
+            }
+            
+            #sendBtn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        /* Scrollbar */
+        .messages-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .messages-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        
+        .messages-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        
+        .messages-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
     </style>
 </head>
 <body>
-    <h1>💬 Chat with Mo - Fixed</h1>
-    <div class="messages" id="messages">Loading...</div>
-    <div>
-        <input type="text" id="chatInput" placeholder="Type message...">
-        <button onclick="sendMessage()">Send</button>
+    <div class="chat-container">
+        <!-- Header -->
+        <div class="chat-header">
+            <div class="header-content">
+                <div class="avatar">👑</div>
+                <div class="header-text">
+                    <h1>Chat with Mo</h1>
+                    <p>Professional Web Developer & Designer</p>
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <span>Typically replies within a few hours</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Messages -->
+        <div class="messages-container" id="messages">
+            <div class="welcome-message">
+                <div class="welcome-icon">💬</div>
+                <h3>Start a Conversation</h3>
+                <p>Send a message to discuss projects, collaborations, or just say hello. I'll get back to you as soon as possible.</p>
+            </div>
+        </div>
+        
+        <!-- Input Area -->
+        <div class="input-container">
+            <div class="input-wrapper">
+                <input type="text" id="chatInput" placeholder="Type your message here..." autocomplete="off">
+                <button id="sendBtn">
+                    <span>Send</span>
+                    <span>➤</span>
+                </button>
+            </div>
+            
+            <div class="file-upload">
+                <label class="file-label">
+                    <span>📎</span>
+                    <span>Attach files (images, PDF, documents)</span>
+                    <input type="file" class="file-input" id="fileInput" accept="image/*,.pdf,.doc,.docx,.txt">
+                </label>
+            </div>
+        </div>
     </div>
-    
+
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
         // Initialize Supabase
@@ -26,7 +429,13 @@
         const supabaseKey = 'sb_publishable_yVh969gWeMM--mYCEXpQkg_AUIEufDj';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
         
-        console.log('Supabase initialized');
+        console.log('Beautiful Chat initialized');
+        
+        // DOM Elements
+        const messagesDiv = document.getElementById('messages');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const fileInput = document.getElementById('fileInput');
         
         // Load messages
         async function loadMessages() {
@@ -39,80 +448,178 @@
                 
                 if (error) throw error;
                 
-                let html = '';
+                // Clear welcome message if we have real messages
+                if (data.length > 0) {
+                    messagesDiv.innerHTML = '';
+                }
+                
                 data.forEach(msg => {
-                    const isUser = msg.sender === 'You' || msg.sender === 'Visitor';
-                    html += `<div class="${isUser ? 'user' : 'admin'}"><strong>${msg.sender}:</strong> ${msg.message || ''}</div>`;
+                    addMessageToUI(msg, false);
                 });
                 
-                document.getElementById('messages').innerHTML = html;
-                document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+                // Scroll to bottom
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
                 
             } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('messages').innerHTML = 'Error loading messages';
+                console.error('Error loading messages:', error);
             }
+        }
+        
+        // Add message to UI
+        function addMessageToUI(msg, animate = true) {
+            const isUser = msg.sender === 'You' || msg.sender === 'Visitor';
+            const isAutoReply = msg.message && (
+                msg.message.includes('Thanks for your message') ||
+                msg.message.includes('Message received') ||
+                msg.message.includes('Got it!')
+            );
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'admin'}`;
+            
+            const time = new Date(msg.timestamp).toLocaleTimeString([], { 
+                hour: '2-digit', minute: '2-digit' 
+            });
+            
+            let badge = '';
+            if (isAutoReply) {
+                badge = '<span style="font-size: 11px; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px; margin-left: 8px;">Auto-reply</span>';
+            }
+            
+            messageDiv.innerHTML = `
+                <div class="message-bubble">
+                    <div class="message-sender">
+                        ${isUser ? '👤 You' : '👑 Mo'} ${badge}
+                    </div>
+                    <div>${msg.message || ''}</div>
+                    <div class="message-time">${time}</div>
+                </div>
+            `;
+            
+            if (animate) {
+                messageDiv.style.opacity = '0';
+                messageDiv.style.transform = 'translateY(20px)';
+                messagesDiv.appendChild(messageDiv);
+                
+                setTimeout(() => {
+                    messageDiv.style.transition = 'opacity 0.3s, transform 0.3s';
+                    messageDiv.style.opacity = '1';
+                    messageDiv.style.transform = 'translateY(0)';
+                }, 10);
+            } else {
+                messagesDiv.appendChild(messageDiv);
+            }
+            
+            // Scroll to bottom
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
         
         // Send message
         async function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const text = input.value.trim();
-            
-            if (!text) return;
-            
-            const result = await supabaseClient
-                .from('mo_chat_messages')
-                .insert([{
-                    sender: 'You',
-                    message: text,
-                    room: 'mo_chat',
-                    timestamp: new Date().toISOString()
-                }]);
-            
-            if (result.error) {
-                alert('Error: ' + result.error.message);
+            const text = chatInput.value.trim();
+            if (!text) {
+                chatInput.focus();
                 return;
             }
             
-            input.value = '';
-            loadMessages();
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<span>Sending...</span> <span>⏳</span>';
+            
+            try {
+                const result = await supabaseClient
+                    .from('mo_chat_messages')
+                    .insert([{
+                        sender: 'You',
+                        message: text,
+                        room: 'mo_chat',
+                        timestamp: new Date().toISOString()
+                    }]);
+                
+                if (result.error) throw result.error;
+                
+                // Add to UI immediately
+                const tempMsg = {
+                    sender: 'You',
+                    message: text,
+                    timestamp: new Date().toISOString()
+                };
+                addMessageToUI(tempMsg, true);
+                
+                // Clear input
+                chatInput.value = '';
+                
+                // Auto-reply after 1.5 seconds
+                setTimeout(() => {
+                    const responses = [
+                        "Thanks for your message! I'll respond when I see it.",
+                        "Message received. I typically respond within a few hours.",
+                        "Got it! I'm currently away but will reply as soon as I can."
+                    ];
+                    const reply = responses[Math.floor(Math.random() * responses.length)];
+                    
+                    const autoReply = {
+                        sender: 'Mo',
+                        message: reply,
+                        timestamp: new Date().toISOString()
+                    };
+                    addMessageToUI(autoReply, true);
+                    
+                    // Save auto-reply to database
+                    supabaseClient
+                        .from('mo_chat_messages')
+                        .insert([{
+                            sender: 'Mo',
+                            message: reply,
+                            room: 'mo_chat',
+                            timestamp: new Date().toISOString()
+                        }]);
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Send error:', error);
+                alert('Failed to send message. Please try again.');
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = '<span>Send</span> <span>➤</span>';
+                chatInput.focus();
+            }
         }
         
-        // SIMPLE REAL-TIME THAT WORKS
-        console.log('Setting up real-time...');
-        
-        const channel = supabaseClient
-            .channel('simple_chat_updates')
+        // Real-time updates
+        supabaseClient
+            .channel('beautiful_chat_updates')
             .on(
                 'postgres_changes',
                 { event: 'INSERT', schema: 'public', table: 'mo_chat_messages' },
                 (payload) => {
-                    console.log('New message via real-time:', payload.new);
-                    
-                    // Only show if it's for mo_chat room
                     if (payload.new.room === 'mo_chat') {
-                        const isUser = payload.new.sender === 'You' || payload.new.sender === 'Visitor';
-                        const msgDiv = document.createElement('div');
-                        msgDiv.className = isUser ? 'user' : 'admin';
-                        msgDiv.innerHTML = `<strong>${payload.new.sender}:</strong> ${payload.new.message || ''}`;
-                        document.getElementById('messages').appendChild(msgDiv);
-                        
-                        // Scroll to bottom
-                        const messagesDiv = document.getElementById('messages');
-                        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                        // Don't show user's own messages twice
+                        if (payload.new.sender !== 'You') {
+                            addMessageToUI(payload.new, true);
+                        }
                     }
                 }
             )
-            .subscribe((status) => {
-                console.log('Real-time status:', status);
-            });
+            .subscribe();
+        
+        // Event Listeners
+        sendBtn.addEventListener('click', sendMessage);
+        
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
         
         // Initial load
         loadMessages();
         
         // Auto-refresh every 30 seconds
         setInterval(loadMessages, 30000);
+        
+        // Focus input on load
+        setTimeout(() => chatInput.focus(), 500);
     </script>
 </body>
 </html>
