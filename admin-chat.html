@@ -1,207 +1,103 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Mo's Admin Chat</title>
+    <title>Mo's Admin Chat - Simple</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; min-height: 100vh; }
-        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); overflow: hidden; }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; }
-        .header h1 { margin: 0; display: flex; align-items: center; gap: 10px; }
-        .main { display: flex; min-height: 500px; }
-        .sidebar { width: 300px; border-right: 1px solid #ddd; padding: 15px; }
-        .chat-area { flex: 1; display: flex; flex-direction: column; }
-        .messages { flex: 1; padding: 20px; overflow-y: auto; background: #f8f9fa; }
-        .input-area { padding: 15px; border-top: 1px solid #ddd; display: flex; gap: 10px; }
-        input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
-        button { padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        .message { margin: 10px 0; padding: 10px; border-radius: 8px; max-width: 70%; }
-        .visitor { background: white; border: 1px solid #ddd; margin-right: auto; }
-        .admin { background: #667eea; color: white; margin-left: auto; }
-        .empty { text-align: center; padding: 40px; color: #666; }
+        body { font-family: Arial; padding: 20px; }
+        .messages { height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
+        input { width: 80%; padding: 10px; font-size: 16px; }
+        button { padding: 10px 20px; background: #667eea; color: white; border: none; font-size: 16px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>👑 Admin Chat</h1>
-        </div>
-        
-        <div class="main">
-            <div class="sidebar">
-                <h3>Conversations</h3>
-                <div id="conversations">
-                    <div class="empty">Loading...</div>
-                </div>
-            </div>
-            
-            <div class="chat-area">
-                <div class="messages" id="messages">
-                    <div class="empty">Select a conversation</div>
-                </div>
-                <div class="input-area" id="inputArea" style="display: none;">
-                    <input type="text" id="messageInput" placeholder="Type reply..." autocomplete="off">
-                    <button id="sendBtn">Send</button>
-                </div>
-            </div>
-        </div>
+    <h1>👑 Admin Chat - Simple</h1>
+    <div class="messages" id="messages">Loading...</div>
+    <div>
+        <input type="text" id="messageInput" placeholder="Type message...">
+        <button onclick="sendMessage()">Send</button>
     </div>
-
+    
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
-        // INITIALIZE SUPABASE ONLY ONCE
-        (function() {
-            // Your Supabase credentials
-            const supabaseUrl = 'https://eecvxrcagzksvaboageo.supabase.co';
-            const supabaseKey = 'sb_publishable_yVh969gWeMM--mYCEXpQkg_AUIEufDj';
-            
-            // Create Supabase client
-            window.supabase = supabase.createClient(supabaseUrl, supabaseKey);
-            
-            // Start the app
-            initializeApp();
-        })();
+        // Initialize Supabase - SIMPLE VERSION THAT WORKS
+        const supabaseUrl = 'https://eecvxrcagzksvaboageo.supabase.co';
+        const supabaseKey = 'sb_publishable_yVh969gWeMM--mYCEXpQkg_AUIEufDj';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
         
-        function initializeApp() {
-            // State
-            let messages = [];
-            
-            // DOM elements
-            const messagesDiv = document.getElementById('messages');
-            const conversationsDiv = document.getElementById('conversations');
-            const messageInput = document.getElementById('messageInput');
-            const sendBtn = document.getElementById('sendBtn');
-            const inputArea = document.getElementById('inputArea');
-            
-            // Load messages
-            async function loadMessages() {
-                try {
-                    console.log('Loading messages from Supabase...');
-                    
-                    const { data, error } = await window.supabase
-                        .from('mo_chat_messages')
-                        .select('*')
-                        .order('timestamp', { ascending: true });
-                    
-                    if (error) {
-                        console.error('Supabase error:', error);
-                        conversationsDiv.innerHTML = '<div class="empty">Error loading</div>';
-                        return;
-                    }
-                    
-                    console.log('Loaded', data.length, 'messages');
-                    messages = data;
-                    
-                    // Update UI
-                    updateMessages();
-                    updateConversations();
-                    
-                    // Show input if we have messages
-                    if (data.length > 0) {
-                        inputArea.style.display = 'flex';
-                        messageInput.focus();
-                    }
-                    
-                } catch (error) {
-                    console.error('Error:', error);
-                }
-            }
-            
-            function updateMessages() {
-                if (messages.length === 0) {
-                    messagesDiv.innerHTML = '<div class="empty">No messages yet</div>';
-                    return;
-                }
+        console.log('Supabase initialized');
+        
+        // Load messages
+        async function loadMessages() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('mo_chat_messages')
+                    .select('*')
+                    .order('timestamp', { ascending: true });
                 
-                messagesDiv.innerHTML = '';
+                if (error) throw error;
                 
-                messages.forEach(msg => {
-                    const div = document.createElement('div');
-                    div.className = `message ${msg.sender === 'You' || msg.sender === 'Visitor' ? 'visitor' : 'admin'}`;
-                    div.innerHTML = `
-                        <strong>${msg.sender}:</strong> ${msg.message || '(file)'}
-                        <br><small>${new Date(msg.timestamp).toLocaleTimeString()}</small>
-                    `;
-                    messagesDiv.appendChild(div);
+                let html = '';
+                data.forEach(msg => {
+                    const cls = msg.sender === 'You' || msg.sender === 'Visitor' ? 'user' : 'admin';
+                    html += `<div class="${cls}"><strong>${msg.sender}:</strong> ${msg.message || ''}</div>`;
                 });
                 
-                // Scroll to bottom
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            }
-            
-            function updateConversations() {
-                // Simplified: one conversation for all visitors
-                const unreadCount = messages.filter(m => 
-                    (m.sender === 'You' || m.sender === 'Visitor') && !m.read
-                ).length;
+                document.getElementById('messages').innerHTML = html;
+                document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
                 
-                conversationsDiv.innerHTML = `
-                    <div style="padding: 10px; background: #f0f0f0; border-radius: 5px;">
-                        <strong>Website Visitors</strong><br>
-                        <small>${messages.length} messages</small>
-                        ${unreadCount > 0 ? `<br><small style="color: #667eea;">${unreadCount} unread</small>` : ''}
-                    </div>
-                `;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('messages').innerHTML = 'Error loading messages';
             }
-            
-            // Send message
-            async function sendMessage() {
-                const text = messageInput.value.trim();
-                if (!text) return;
-                
-                sendBtn.disabled = true;
-                sendBtn.textContent = 'Sending...';
-                
-                try {
-                    const { error } = await window.supabase
-                        .from('mo_chat_messages')
-                        .insert([
-                            { 
-                                sender: 'Admin',
-                                message: text,
-                                room: 'mo_chat',
-                                timestamp: new Date().toISOString()
-                            }
-                        ]);
-                    
-                    if (error) throw error;
-                    
-                    messageInput.value = '';
-                    loadMessages(); // Reload
-                    
-                } catch (error) {
-                    console.error('Send error:', error);
-                    alert('Failed to send');
-                } finally {
-                    sendBtn.disabled = false;
-                    sendBtn.textContent = 'Send';
-                    messageInput.focus();
-                }
-            }
-            
-            // Setup real-time
-            function setupRealtime() {
-                window.supabase
-                    .channel('mo_chat')
-                    .on('INSERT', payload => {
-                        console.log('New message:', payload.new);
-                        loadMessages();
-                    })
-                    .subscribe();
-            }
-            
-            // Event listeners
-            sendBtn.onclick = sendMessage;
-            messageInput.onkeypress = (e) => {
-                if (e.key === 'Enter') sendMessage();
-            };
-            
-            // Initialize
-            loadMessages();
-            setupRealtime();
-            
-            // Auto-refresh
-            setInterval(loadMessages, 10000);
         }
+        
+        // Send message - SIMPLE VERSION THAT WORKS
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+            
+            if (!text) {
+                input.focus();
+                return;
+            }
+            
+            console.log('Sending:', text);
+            
+            // Same insert that worked in debug
+            const result = await supabaseClient
+                .from('mo_chat_messages')
+                .insert([{
+                    sender: 'Mo',
+                    message: text,
+                    room: 'mo_chat',
+                    timestamp: new Date().toISOString()
+                }]);
+            
+            if (result.error) {
+                console.error('Send error:', result.error);
+                alert('Error: ' + result.error.message);
+                return;
+            }
+            
+            console.log('Message sent successfully');
+            input.value = '';
+            loadMessages(); // Reload messages
+        }
+        
+        // Initial load
+        loadMessages();
+        
+        // Real-time updates
+        supabaseClient
+            .channel('mo_chat')
+            .on('INSERT', payload => {
+                console.log('New message:', payload.new);
+                loadMessages();
+            })
+            .subscribe();
+            
+        // Auto-refresh every 10 seconds
+        setInterval(loadMessages, 10000);
     </script>
 </body>
 </html>
